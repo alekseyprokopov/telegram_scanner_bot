@@ -6,7 +6,7 @@ import (
 	tgClient "scanner_bot/clients/telegram"
 	eventConsumer "scanner_bot/consumer/event-consumer"
 	eventProcessor "scanner_bot/events/telegram"
-	"scanner_bot/storage/files"
+
 )
 
 const (
