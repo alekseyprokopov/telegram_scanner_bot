@@ -1,35 +1,39 @@
 package storage
 
-import (
-	"crypto/sha1"
-	"fmt"
-	"io"
-)
-
-type Storage interface {
-	Save(p *Page) error
-	Pick(userName string) (*Page, error)
-	Remove(p *Page) error
-	IsExists(p *Page) (bool, error)
+type Configuration struct {
+	UserName   string
+	UserConfig Config
 }
 
-type Page struct {
-	URL      string
-	UserName string
+type Config struct {
+	payTypes  []string
+	minValue  int
+	minSpread float64
+	maxSpread float64
+	platforms map[string]Platform
 }
 
-func (p Page) Hash() (string, error) {
-	h := sha1.New()
+type Platform struct {
+	IsActive     bool
+	PlatformName string
+	Roles        []Role
+}
 
-	if _, err := io.WriteString(h, p.URL); err != nil {
-		return "", fmt.Errorf("can't calculate hash: %w", err)
-	}
+type Role struct {
+	RoleName string
+	IsActive bool
+}
 
-	if _, err := io.WriteString(h, p.UserName); err != nil {
-		return "", fmt.Errorf("can't calculate hash: %w", err)
-	}
+var DefaultConfig = Config{
+	payTypes:  []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
+	minValue:  10000,
+	minSpread: 0.5,
+	maxSpread: 10,
+	platforms: map[string]Platform{
+		"binance":
+	},
+}
 
-	//из []byte в стринг
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
-
+func ()  {
+	
 }

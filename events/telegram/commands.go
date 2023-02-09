@@ -11,9 +11,10 @@ import (
 )
 
 const (
-	RndCmd   = "/rnd"
-	HelpCmd  = "/help"
-	StartCmd = "/start"
+	SetConfigCmd  = "/setConfig"
+	ShowConfigCmd = "/showConfig"
+	HelpCmd       = "/help"
+	StartCmd      = "/start"
 )
 
 func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
@@ -26,10 +27,14 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 	}
 
 	switch text {
-	case RndCmd:
-		return p.sendRandom(chatID, username)
+	case SetConfigCmd:
+		return p.SetConfig(chatID, username)
 	case HelpCmd:
 		return p.SendHelp(chatID)
+
+	case ShowConfigCmd:
+		return p.ShowConfig(chatID)
+
 	case StartCmd:
 		return p.SendHello(chatID)
 
@@ -68,6 +73,21 @@ func (p *EventProcessor) SavePage(chatID int, pageURL string, username string) (
 		return err
 	}
 	return nil
+}
+
+func (p *EventProcessor) SetConfig(id int, username string) error {
+
+}
+
+func (p *EventProcessor) ShowConfig(id int, username string) (err error) {
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("can't send random page (cmd): %w", err)
+		}
+	}()
+
+	config, err := p.storage.Pick()
+
 }
 
 func (p *EventProcessor) sendRandom(chatId int, username string) (err error) {
