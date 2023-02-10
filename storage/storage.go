@@ -6,7 +6,7 @@ import (
 )
 
 type Configuration struct {
-	UserId     int `json:"user_name"`
+	UserId     int    `json:"user_name"`
 	UserConfig Config `json:"user_config"`
 }
 
@@ -25,7 +25,6 @@ type Platform struct {
 
 type IsActiveRole bool
 
-
 func UserConfigToString(c *Configuration) (userConfig string, err error) {
 	configuration := *c
 	s, err := json.Marshal(configuration.UserConfig)
@@ -34,7 +33,6 @@ func UserConfigToString(c *Configuration) (userConfig string, err error) {
 	}
 	return string(s), nil
 }
-
 
 func StringToConfig(userConfig string) (*Config, error) {
 	pBytesUserConfig := []byte(userConfig)
@@ -47,27 +45,27 @@ func StringToConfig(userConfig string) (*Config, error) {
 	return &data, nil
 }
 
-func toDefaultConfig() *Configuration {
-	return &DefaultConfig
-}
-
-var DefaultConfig = Configuration{
-	UserId: 0,
-	UserConfig: Config{
-		PayTypes:  []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
-		MinValue:  10000,
-		MinSpread: 0.5,
-		MaxSpread: 10,
-		Platforms: map[string]Platform{
-			"binance": {
-				IsActivePlatform: true,
-				Roles: map[string]IsActiveRole{
-					"taker/taker": true,
-					"taker/maker": true,
-					"maker/taker": true,
-					"maker/maker": true,
-				},
+var DefaultUserConfig = &Config{
+	PayTypes:  []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
+	MinValue:  10000,
+	MinSpread: 0.5,
+	MaxSpread: 10,
+	Platforms: map[string]Platform{
+		"binance": {
+			IsActivePlatform: true,
+			Roles: map[string]IsActiveRole{
+				"taker/taker": true,
+				"taker/maker": true,
+				"maker/taker": true,
+				"maker/maker": true,
 			},
 		},
 	},
+}
+
+func toDefaultConfig(userId int) *Configuration {
+	return &Configuration{
+		UserId:     userId,
+		UserConfig: *DefaultUserConfig,
+	}
 }

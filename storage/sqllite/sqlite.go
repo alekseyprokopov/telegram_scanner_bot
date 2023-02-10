@@ -62,5 +62,15 @@ func (s *Storage) PickConfig(userId int) (*storage.Configuration, error) {
 		UserId:     userId,
 		UserConfig: *userConfig,
 	}, nil
+}
 
+func (s *Storage) IsExists(userId int) (bool, error) {
+	q := `SELECT COUNT(*) FROM configs WHERE userid = ?`
+
+	var count int
+
+	if err := s.db.QueryRow(q, userId).Scan(&count); err != nil {
+		return false, fmt.Errorf("can't check if page exists: %w", err)
+	}
+	return count > 0, nil
 }
