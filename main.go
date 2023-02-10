@@ -6,7 +6,7 @@ import (
 	tgClient "scanner_bot/clients/telegram"
 	eventConsumer "scanner_bot/consumer/event-consumer"
 	eventProcessor "scanner_bot/events/telegram"
-
+	"scanner_bot/storage/sqlite"
 )
 
 const (
@@ -16,10 +16,18 @@ const (
 )
 
 func main() {
+	s, err := sqlite.New(storagePath)
+	if err != nil {
+		log.Fatal("can't connect to storage: ", err)
+	}
+
+	if err := s.Init(); err != nil {
+		log.Fatal("can't init storage: ", err)
+	}
 
 	eventsProcessor := eventProcessor.New(
 		tgClient.New(tgBotHost, token()),
-		files.New(storagePath),
+		s,
 	)
 
 	log.Print("service started...")
