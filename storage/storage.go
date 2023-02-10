@@ -36,11 +36,11 @@ func UserConfigToString(c *Configuration) (userConfig string, err error) {
 }
 
 
-func StringToConfig(userID int, userConfig string) (*Configuration, error) {
+func StringToConfig(userConfig string) (*Config, error) {
 	pBytesUserConfig := []byte(userConfig)
-	var data Configuration
-	data.UserId = userID
-	if err := json.Unmarshal(pBytesUserConfig, &data.UserConfig); err != nil {
+	var data Config
+
+	if err := json.Unmarshal(pBytesUserConfig, &data); err != nil {
 		return nil, fmt.Errorf("can't transform string to Configuration: %w", err)
 	}
 
