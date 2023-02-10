@@ -63,7 +63,7 @@ var DefaultUserConfig = &Config{
 	},
 }
 
-func toDefaultConfig(userId int) *Configuration {
+func ToDefaultConfig(userId int) *Configuration {
 	return &Configuration{
 		ChatId:     userId,
 		UserConfig: *DefaultUserConfig,

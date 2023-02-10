@@ -43,7 +43,7 @@ func (s *Storage) Update(p *config.Configuration) error {
 	return nil
 }
 
-func (s *Storage) PickConfig(chatId int) (*config.Configuration, error) {
+func (s *Storage) GetConfig(chatId int) (*config.Configuration, error) {
 	q := `SELECT user_config FROM configs WHERE chat_id = ?`
 
 	var userConfigData string

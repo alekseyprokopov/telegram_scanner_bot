@@ -1,12 +1,11 @@
 package telegram
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/url"
-	"scanner_bot/storage"
-	"scanner_bot/storage/files"
+	"scanner_bot/config"
+
 	"strings"
 )
 
@@ -22,13 +21,9 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 
 	log.Printf("got new command: %s, from user: %s", text, username)
 
-	if isAddCmd(text) {
-		return p.SavePage(chatID, text, username)
-	}
-
 	switch text {
-	case SetConfigCmd:
-		return p.SetConfig(chatID, username)
+	//case SetConfigCmd:
+	//	return p.SetConfig(chatID, username)
 	case HelpCmd:
 		return p.SendHelp(chatID)
 
@@ -44,28 +39,26 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 
 }
 
-func (p *EventProcessor) SavePage(chatID int, pageURL string, username string) (err error) {
+func (p *EventProcessor) SaveConfig(chatID int, pageURL string, username string) (err error) {
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("can't save page (cmd): %w", err)
 		}
 	}()
 
-	page := &storage.Page{
-		URL:      pageURL,
-		UserName: username,
-	}
-	isExists, err := p.storage.IsExists(page)
+	conf := config.ToDefaultConfig(chatID)
+	isExists, err := p.storage.IsExists(chatID)
 
 	if err != nil {
 		return err
 	}
 
 	if isExists {
+
 		return p.tg.SendMessage(chatID, msgAlreadyExists)
 	}
 
-	if err := p.storage.Save(page); err != nil {
+	if err := p.storage.Save(conf); err != nil {
 		return err
 	}
 
@@ -75,41 +68,29 @@ func (p *EventProcessor) SavePage(chatID int, pageURL string, username string) (
 	return nil
 }
 
-func (p *EventProcessor) SetConfig(id int, username string) error {
+//func (p *EventProcessor) SetConfig(id int, username string) error {
+//
+//}
 
-}
-
-func (p *EventProcessor) ShowConfig(id int, username string) (err error) {
+func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 	defer func() {
 		if err != nil {
-			err = fmt.Errorf("can't send random page (cmd): %w", err)
+			err = fmt.Errorf("can't show config (cmd): %w", err)
 		}
 	}()
-
-	config, err := p.storage.Pick()
-
-}
-
-func (p *EventProcessor) sendRandom(chatId int, username string) (err error) {
-	defer func() {
-		if err != nil {
-			err = fmt.Errorf("can't send random page (cmd): %w", err)
-		}
-	}()
-
-	page, err := p.storage.Pick(username)
-
-	if err != nil && !errors.Is(err, files.ErrNoSavedPages) {
+	//исправить!!!!!!
+	conf, err := p.storage.GetConfig(chatID)
+	if err != nil {
 		return err
 	}
-	if errors.Is(err, files.ErrNoSavedPages) {
-		return p.tg.SendMessage(chatId, msgNoSavedPages)
-	}
 
-	if err := p.tg.SendMessage(chatId, page.URL); err != nil {
+	result, _ := config.UserConfigToString(conf)
+
+	if err := p.tg.SendMessage(chatID, result); err != nil {
 		return err
 	}
-	return p.storage.Remove(page)
+	return nil
+
 }
 
 func (p *EventProcessor) SendHelp(chatId int) error {
