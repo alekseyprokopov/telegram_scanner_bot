@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"scanner_bot/platform"
 )
 
 type Configuration struct {
@@ -11,19 +12,11 @@ type Configuration struct {
 }
 
 type Config struct {
-	PayTypes  []string            `json:"pay_types"`
 	MinValue  int                 `json:"min_value"`
 	MinSpread float64             `json:"min_spread"`
 	MaxSpread float64             `json:"max_spread"`
-	Platforms map[string]Platform `json:"platforms"`
+	Platforms []platform.Platform `json:"platforms"`
 }
-
-type Platform struct {
-	IsActivePlatform bool                    `json:"is_active_platform"`
-	Roles            map[string]IsActiveRole `json:"roles"`
-}
-
-type IsActiveRole bool
 
 func UserConfigToString(c *Configuration) (userConfig string, err error) {
 	configuration := *c
@@ -46,21 +39,29 @@ func StringToConfig(userConfig string) (*Config, error) {
 }
 
 var DefaultUserConfig = &Config{
-	PayTypes:  []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
 	MinValue:  10000,
 	MinSpread: 0.5,
 	MaxSpread: 10,
-	Platforms: map[string]Platform{
-		"binance": {
-			IsActivePlatform: true,
-			Roles: map[string]IsActiveRole{
-				"taker/taker": true,
-				"taker/maker": true,
-				"maker/taker": true,
-				"maker/maker": true,
-			},
+	Platforms: []platform.Platform{platform.Platform{
+		PlatformName:     "binace",
+		PayTypes:         []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
+		IsActivePlatform: true,
+		Roles: map[string]bool{
+			"taker/taker": true,
+			"taker/maker": true,
+			"maker/taker": true,
+			"maker/maker": true},
+	}, platform.Platform{
+		PlatformName:     "garantex",
+		PayTypes:         []string{"Cбер", "Тинькофф"},
+		IsActivePlatform: true,
+		Roles: map[string]bool{
+			"taker/taker": true,
+			"taker/maker": true,
+			"maker/taker": true,
+			"maker/maker": true,
 		},
-	},
+	}},
 }
 
 func ToDefaultConfig(userId int) *Configuration {
@@ -69,3 +70,13 @@ func ToDefaultConfig(userId int) *Configuration {
 		UserConfig: *DefaultUserConfig,
 	}
 }
+
+
+PlatformName:"binace",
+PayTypes:         []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
+IsActivePlatform: true,
+Roles: map[string]bool{
+"taker/taker": true,
+"taker/maker": true,
+"maker/taker": true,
+"maker/maker": true,

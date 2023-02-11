@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"scanner_bot/clients/telegram"
 	"scanner_bot/events"
+	"scanner_bot/platform"
 	"scanner_bot/storage"
 )
 
@@ -12,6 +13,7 @@ type EventProcessor struct {
 	tg      *telegram.Client
 	offset  int
 	storage storage.Storage
+	platforms []platform.Platform
 }
 
 type Meta struct {

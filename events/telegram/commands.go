@@ -31,7 +31,7 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 		return p.ShowConfig(chatID)
 
 	case StartCmd:
-		return p.SendHello(chatID)
+		return p.SaveConfig(chatID)
 
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
@@ -39,7 +39,7 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 
 }
 
-func (p *EventProcessor) SaveConfig(chatID int, pageURL string, username string) (err error) {
+func (p *EventProcessor) SaveConfig(chatID int) (err error) {
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("can't save page (cmd): %w", err)

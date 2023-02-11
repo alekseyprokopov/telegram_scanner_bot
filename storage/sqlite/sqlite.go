@@ -26,19 +26,17 @@ func New(path string) (*Storage, error) {
 	}, nil
 }
 
-func (s *Storage) Save(p *config.Configuration) error {
+func (s *Storage) Save(c *config.Configuration) error {
+	UserName := c.ChatId
+	UserConfig, err := config.UserConfigToString(c)
+	if err!= nil{
+		return fmt.Errorf("can't convert userConfig to string")
+	}
+
 	q := `INSERT INTO configs (chat_id, user_config) VALUES (?, ?)`
-	_, err := s.db.Exec(q, p.ChatId, p.UserConfig)
+	_, err = s.db.Exec(q, UserName, UserConfig)
 	if err != nil {
 		return fmt.Errorf("can's save config: %w", err)
-	}
-	return nil
-}
-func (s *Storage) Update(p *config.Configuration) error {
-	q := `UPDATE configs SET user_config = ? WHERE chat_id = ?`
-	_, err := s.db.Exec(q, p.ChatId, p.UserConfig)
-	if err != nil {
-		return fmt.Errorf("can's update config: %w", err)
 	}
 	return nil
 }
@@ -76,7 +74,7 @@ func (s *Storage) IsExists(chatId int) (bool, error) {
 }
 
 func (s *Storage) Init() error {
-	query := `CREATE TABLE IF NOT EXISTS configs (user_name TEXT, user_config TEXT)`
+	query := `CREATE TABLE IF NOT EXISTS configs (chat_id INTEGER, user_config TEXT)`
 
 	_, err := s.db.Exec(query)
 	if err != nil {
