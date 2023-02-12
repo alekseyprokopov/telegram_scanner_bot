@@ -1,17 +1,74 @@
 package platform
 
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+)
+
+const (
+	BinanceURL  = "p2p.binance.com"
+	BinancePath = "bapi/c2c/v2/friendly/c2c/adv/search"
+)
+
 type Platform struct {
-	PlatformName     string
+	PlatformName     string          `json:"platform_name"`
 	PayTypes         []string        `json:"pay_types"`
 	IsActivePlatform bool            `json:"is_active_platform"`
 	Roles            map[string]bool `json:"roles"`
+	client           http.Client
 }
 
-func New(platformName string, isActive bool, payTypes []string, roles map[string]bool) *Platform {
-	return &Platform{
-		PlatformName:     platformName,
-		PayTypes:         payTypes,
-		IsActivePlatform: isActive,
-		Roles:            roles,
+func (p *Platform) GetData(host string, path string, query map[string]interface{}) (map[string]interface{}, error) {
+	resp, err := p.DoRequest(host, path, query)
+	if err != nil {
+		return nil, err
 	}
+
+	var result map[string]interface{}
+
+	if err := json.Unmarshal(resp, &result); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+
+}
+
+func (p *Platform) DoRequest(host string, path string, query map[string]interface{}) ([]byte, error) {
+
+	u := url.URL{
+		Scheme: "https",
+		Host:   host,
+		Path:   path,
+	}
+
+	bytesRepresentation, err := json.Marshal(query)
+
+	if err != nil {
+		return nil, fmt.Errorf("can't json query: %w", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(bytesRepresentation))
+	if err != nil {
+		return nil, fmt.Errorf("can't do binance request: %w", err)
+	}
+	req.Header.Set("accept", "*/*")
+	req.Header.Set("content-type", "application/json")
+	req.Header.Set("user-agent", `"Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110"`)
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("can't get response: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("can't read body: %w", err)
+	}
+	return body, nil
+
 }

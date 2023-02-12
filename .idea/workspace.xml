@@ -5,16 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81dd0e54-a279-4d6e-97a3-bd6ffb0ed11d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/platform/platform.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/js.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/storage.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/telegram.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/telegram.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scanner_bot.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage/sqlite/sqlite.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/sqlite/sqlite.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/storage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/platform.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/platform.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scanner_bot" beforeDir="false" afterPath="$PROJECT_DIR$/scanner_bot" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,8 +30,19 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedIndex" value="1" />
   </component>
   <component name="ProjectId" id="2LUcDzaHu7slhmyHeJXlGe0yQo3" />
   <component name="ProjectViewState">

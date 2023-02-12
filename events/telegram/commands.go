@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"scanner_bot/config"
+	"scanner_bot/platform"
 
 	"strings"
 )
@@ -84,6 +85,14 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 		return err
 	}
 
+	platf := conf.UserConfig
+	item := platf.Binance
+	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, platform.BinanceJsonData)
+	if err != nil {
+		return fmt.Errorf("update err: %w", err)
+	}
+
+	log.Println(data)
 	result, _ := config.UserConfigToString(conf)
 
 	if err := p.tg.SendMessage(chatID, result); err != nil {

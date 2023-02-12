@@ -12,10 +12,11 @@ type Configuration struct {
 }
 
 type Config struct {
-	MinValue  int                 `json:"min_value"`
-	MinSpread float64             `json:"min_spread"`
-	MaxSpread float64             `json:"max_spread"`
-	Platforms []platform.Platform `json:"platforms"`
+	MinValue  int               `json:"min_value"`
+	MinSpread float64           `json:"min_spread"`
+	MaxSpread float64           `json:"max_spread"`
+	Binance   platform.Platform `json:"binance"`
+	Garantex  platform.Platform `json:"garantex"`
 }
 
 func UserConfigToString(c *Configuration) (userConfig string, err error) {
@@ -42,16 +43,17 @@ var DefaultUserConfig = &Config{
 	MinValue:  10000,
 	MinSpread: 0.5,
 	MaxSpread: 10,
-	Platforms: []platform.Platform{platform.Platform{
+	Binance: platform.Platform{
 		PlatformName:     "binace",
-		PayTypes:         []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
+		PayTypes:         []string{"RosBankNew", "TinkoffNew", "QIWI", "YandexMoneyNew"},
 		IsActivePlatform: true,
 		Roles: map[string]bool{
 			"taker/taker": true,
 			"taker/maker": true,
 			"maker/taker": true,
 			"maker/maker": true},
-	}, platform.Platform{
+	},
+	Garantex: platform.Platform{
 		PlatformName:     "garantex",
 		PayTypes:         []string{"Cбер", "Тинькофф"},
 		IsActivePlatform: true,
@@ -61,7 +63,7 @@ var DefaultUserConfig = &Config{
 			"maker/taker": true,
 			"maker/maker": true,
 		},
-	}},
+	},
 }
 
 func ToDefaultConfig(userId int) *Configuration {
@@ -70,13 +72,3 @@ func ToDefaultConfig(userId int) *Configuration {
 		UserConfig: *DefaultUserConfig,
 	}
 }
-
-
-PlatformName:"binace",
-PayTypes:         []string{"Sberbank", "Tinkoff", "QIWI", "YooMoney"},
-IsActivePlatform: true,
-Roles: map[string]bool{
-"taker/taker": true,
-"taker/maker": true,
-"maker/taker": true,
-"maker/maker": true,
