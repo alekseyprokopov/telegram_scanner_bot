@@ -17,6 +17,8 @@ type Config struct {
 	MaxSpread float64           `json:"max_spread"`
 	Binance   platform.Platform `json:"binance"`
 	Garantex  platform.Platform `json:"garantex"`
+	Huobi     platform.Platform `json:"huobi"`
+	ByBit     platform.Platform `json:"by_bit"`
 }
 
 func UserConfigToString(c *Configuration) (userConfig string, err error) {
@@ -44,8 +46,8 @@ var DefaultUserConfig = &Config{
 	MinSpread: 0.5,
 	MaxSpread: 10,
 	Binance: platform.Platform{
-		PlatformName:     "binace",
-		PayTypes:         []string{"RosBankNew", "TinkoffNew", "QIWI", "YandexMoneyNew"},
+		PlatformName:     "binance",
+		PayTypes:         []string{"RosBankNew", "TinkoffNew", "RaiffeisenBank", "QIWI", "YandexMoneyNew"},
 		IsActivePlatform: true,
 		Roles: map[string]bool{
 			"taker/taker": true,
@@ -55,7 +57,29 @@ var DefaultUserConfig = &Config{
 	},
 	Garantex: platform.Platform{
 		PlatformName:     "garantex",
-		PayTypes:         []string{"Cбер", "Тинькофф"},
+		PayTypes:         []string{"Cбер", "Тинькофф", "райффайзен", "QIWI", "ЮМани"},
+		IsActivePlatform: true,
+		Roles: map[string]bool{
+			"taker/taker": true,
+			"taker/maker": true,
+			"maker/taker": false,
+			"maker/maker": false,
+		},
+	},
+	Huobi: platform.Platform{
+		PlatformName:     "huobi",
+		PayTypes:         []string{"29" /*SBER*/, "28" /*Tinkoff*/, "36" /*Райфайзен*/, "9" /*QIWI*/, "19" /*ЮМани*/},
+		IsActivePlatform: true,
+		Roles: map[string]bool{
+			"taker/taker": true,
+			"taker/maker": true,
+			"maker/taker": false,
+			"maker/maker": false,
+		},
+	},
+	ByBit: platform.Platform{
+		PlatformName:     "bybit",
+		PayTypes:         []string{"185" /*SBER*/, "75" /*Tinkoff*/, "64" /*Райфайзен*/, "62" /*QIWI*/, "274" /*ЮМани*/},
 		IsActivePlatform: true,
 		Roles: map[string]bool{
 			"taker/taker": true,

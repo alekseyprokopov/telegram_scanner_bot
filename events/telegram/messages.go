@@ -28,6 +28,8 @@ func msgConfig(c *config.Configuration) string {
 	minSpread := fmt.Sprintf("*Минимальный спред:* %.1f \n", c.UserConfig.MinSpread)
 	maxSpread := fmt.Sprintf("*Максимальный спред:* %.1f \n \n", c.UserConfig.MaxSpread)
 	binanceInfo := platformParser(&c.UserConfig.Binance)
+	byBitInfo := platformParser(&c.UserConfig.ByBit)
+	huobiInfo := platformParser(&c.UserConfig.Huobi)
 	garantexInfo := platformParser(&c.UserConfig.Garantex)
 
 	var result strings.Builder
@@ -37,6 +39,8 @@ func msgConfig(c *config.Configuration) string {
 	result.WriteString(maxSpread)
 
 	result.WriteString(binanceInfo)
+	result.WriteString(byBitInfo)
+	result.WriteString(huobiInfo)
 	result.WriteString(garantexInfo)
 
 	return result.String()
