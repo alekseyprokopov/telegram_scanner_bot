@@ -50,8 +50,8 @@ var DefaultUserConfig = &Config{
 		Roles: map[string]bool{
 			"taker/taker": true,
 			"taker/maker": true,
-			"maker/taker": true,
-			"maker/maker": true},
+			"maker/taker": false,
+			"maker/maker": false},
 	},
 	Garantex: platform.Platform{
 		PlatformName:     "garantex",
@@ -60,8 +60,8 @@ var DefaultUserConfig = &Config{
 		Roles: map[string]bool{
 			"taker/taker": true,
 			"taker/maker": true,
-			"maker/taker": true,
-			"maker/maker": true,
+			"maker/taker": false,
+			"maker/maker": false,
 		},
 	},
 }

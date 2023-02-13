@@ -85,6 +85,17 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 		return err
 	}
 
+	//result, _ := config.UserConfigToString(conf)
+	result := msgConfig(conf)
+	if err := p.tg.SendMessage(chatID, result); err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (p *EventProcessor) GetCourses(chatID int) error {
+	conf, err := p.storage.GetConfig(chatID)
 	platf := conf.UserConfig
 	item := platf.Binance
 	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, platform.BinanceJsonData)
@@ -93,12 +104,10 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 	}
 
 	log.Println(data)
-	result, _ := config.UserConfigToString(conf)
-
-	if err := p.tg.SendMessage(chatID, result); err != nil {
-		return err
-	}
 	return nil
+}
+
+func (p EventProcessor) getConfig() {
 
 }
 

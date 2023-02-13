@@ -26,7 +26,6 @@ func (c Consumer) Start() error {
 
 		if err != nil {
 			log.Printf("ERR consumer: %s", err.Error())
-
 			continue
 		}
 

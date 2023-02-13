@@ -93,6 +93,7 @@ func (c *Client) SendMessage(chatId int, text string) error {
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatId))
 	q.Add("text", text)
+	q.Add("parse_mode", "Markdown")
 	_, err := c.doRequest(sendMessageMethod, q)
 
 	if err != nil {
