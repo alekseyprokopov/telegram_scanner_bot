@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"scanner_bot/config"
 	"scanner_bot/platform"
+	"scanner_bot/platform/binance"
 
 	"strings"
 )
@@ -98,7 +99,7 @@ func (p *EventProcessor) GetCourses(chatID int) error {
 	conf, err := p.storage.GetConfig(chatID)
 	platf := conf.UserConfig
 	item := platf.Binance
-	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, platform.BinanceJsonData)
+	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, binance.BinanceJsonData)
 	if err != nil {
 		return fmt.Errorf("update err: %w", err)
 	}

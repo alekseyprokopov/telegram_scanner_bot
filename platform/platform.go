@@ -38,7 +38,7 @@ func (p *Platform) GetData(host string, path string, query map[string]interface{
 
 }
 
-func (p *Platform) DoRequest(host string, path string, query map[string]interface{}) ([]byte, error) {
+func (p *Platform) DoRequest(host string, path string, query *bytes.Buffer) ([]byte, error) {
 
 	u := url.URL{
 		Scheme: "https",
@@ -46,13 +46,11 @@ func (p *Platform) DoRequest(host string, path string, query map[string]interfac
 		Path:   path,
 	}
 
-	bytesRepresentation, err := json.Marshal(query)
-
 	if err != nil {
 		return nil, fmt.Errorf("can't json query: %w", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, u.String(), bytes.NewBuffer(bytesRepresentation))
+	req, err := http.NewRequest(http.MethodPost, u.String(), query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do binance request: %w", err)
 	}
@@ -71,4 +69,12 @@ func (p *Platform) DoRequest(host string, path string, query map[string]interfac
 	}
 	return body, nil
 
+}
+
+func BytesToQuery(params *map[string]interface{}) (*bytes.Buffer, error) {
+	bytesRepresentation, err := json.Marshal(*params)
+	if err != nil {
+		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
+	}
+	return bytes.NewBuffer(bytesRepresentation), nil
 }

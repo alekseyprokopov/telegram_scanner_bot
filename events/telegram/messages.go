@@ -14,7 +14,6 @@ const (
 
 	msgUnknownCommand = "Unknown command"
 
-	msgNoSavedPages = "You have no saved pages"
 
 	msgSaved = "Saved!"
 
@@ -47,7 +46,7 @@ func msgConfig(c *config.Configuration) string {
 }
 
 func platformParser(p *platform.Platform) string {
-	platformInfo := fmt.Sprintf("_%s INFO:_ \n", strings.ToUpper(p.PlatformName))
+	platformInfo := fmt.Sprintf("_%s:_ \n", strings.ToUpper(p.PlatformName))
 	platformPay := fmt.Sprintf("*Платежные системы:* %s \n", strings.Join(p.PayTypes, ", "))
 	platformRoles := fmt.Sprintf("*Роли:* %s \n \n", rolesParser(&p.Roles))
 	return platformInfo + platformPay + platformRoles
