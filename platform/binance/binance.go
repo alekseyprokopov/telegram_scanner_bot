@@ -22,7 +22,7 @@ func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, 
 		"tradeType":      tradeType,  /*BUY(Купить) or SELL(продать)*/
 	}
 
-	result, err := platform.BytesToQuery(&BinanceJsonData)
+	result, err := platform.QueryToBytes(&BinanceJsonData)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}

@@ -22,8 +22,9 @@ type Platform struct {
 	client           http.Client
 }
 
-func (p *Platform) GetData(host string, path string, query map[string]interface{}) (map[string]interface{}, error) {
-	resp, err := p.DoRequest(host, path, query)
+func (p *Platform) GetData(host string, path string, buffer *bytes.Buffer) (map[string]interface{}, error) {
+
+	resp, err := p.DoRequest(host, path, buffer)
 	if err != nil {
 		return nil, err
 	}
@@ -44,10 +45,6 @@ func (p *Platform) DoRequest(host string, path string, query *bytes.Buffer) ([]b
 		Scheme: "https",
 		Host:   host,
 		Path:   path,
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("can't json query: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodPost, u.String(), query)
@@ -71,10 +68,29 @@ func (p *Platform) DoRequest(host string, path string, query *bytes.Buffer) ([]b
 
 }
 
-func BytesToQuery(params *map[string]interface{}) (*bytes.Buffer, error) {
+func QueryToBytes(params *map[string]interface{}) (*bytes.Buffer, error) {
 	bytesRepresentation, err := json.Marshal(*params)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
 	return bytes.NewBuffer(bytesRepresentation), nil
+}
+
+type ExchageInfo struct {
+	name   string
+	tokens map[string]tokenInfo
+}
+
+type tokenInfo struct {
+	buy  Advertise
+	sell Advertise
+	spot []map[string]string
+}
+
+type Advertise struct {
+	sellerName string
+	bankName   string
+	cost       int
+	amount     int
+	deals      int
 }

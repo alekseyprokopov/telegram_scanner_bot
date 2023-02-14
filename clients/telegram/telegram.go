@@ -81,6 +81,7 @@ func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 
 	body, err := io.ReadAll(resp.Body)
 
+
 	if err != nil {
 		return nil, fmt.Errorf("can't read info from response: %w", err)
 	}

@@ -16,6 +16,7 @@ const (
 	ShowConfigCmd = "/showConfig"
 	HelpCmd       = "/help"
 	StartCmd      = "/start"
+	GetCoursesCmd = "/getCourses"
 )
 
 func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
@@ -34,6 +35,9 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 
 	case StartCmd:
 		return p.SaveConfig(chatID)
+
+	case GetCoursesCmd:
+		return p.GetCourses(chatID)
 
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
@@ -97,14 +101,28 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 
 func (p *EventProcessor) GetCourses(chatID int) error {
 	conf, err := p.storage.GetConfig(chatID)
+
+	userConfig := &conf.UserConfig
+
+	query, err := binance.GetQuery(userConfig, "USDT", "BUY")
+
+	if err != nil {
+		return fmt.Errorf("can't get query: %w", err)
+	}
+
 	platf := conf.UserConfig
 	item := platf.Binance
-	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, binance.BinanceJsonData)
+	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, query)
 	if err != nil {
 		return fmt.Errorf("update err: %w", err)
 	}
 
-	log.Println(data)
+	result := fmt.Sprintf("data:", data["data"])
+	fmt.Println(result)
+	if err := p.tg.SendMessage(chatID, result); err != nil {
+		return err
+	}
+
 	return nil
 }
 
