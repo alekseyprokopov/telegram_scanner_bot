@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -81,7 +82,6 @@ func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 
 	body, err := io.ReadAll(resp.Body)
 
-
 	if err != nil {
 		return nil, fmt.Errorf("can't read info from response: %w", err)
 	}
@@ -91,14 +91,41 @@ func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 }
 
 func (c *Client) SendMessage(chatId int, text string) error {
+	u := url.URL{
+		Scheme: "https",
+		Host:   c.host,
+		Path:   path.Join(c.basePath, sendMessageMethod),
+	}
+	log.Println(u.String())
+
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatId))
 	q.Add("text", text)
 	q.Add("parse_mode", "Markdown")
-	_, err := c.doRequest(sendMessageMethod, q)
+	//buf, err := json.Marshal(q)
+	//if err != nil {
+	//	return err
+	//}
+
+	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
+	req.Header.Set("Content-Type", "application/json")
+
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.client.Do(req)
 
 	if err != nil {
-		fmt.Errorf("can't send message: %w", err)
+		return fmt.Errorf("can't recieve response: %w", err)
 	}
-	return nil
+
+	defer func() { _ = resp.Body.Close() }()
+
+	_, err = io.ReadAll(resp.Body)
+
+	if err != nil {
+		return fmt.Errorf("can't read info from response: %w", err)
+	}
+
+	return err
+
 }

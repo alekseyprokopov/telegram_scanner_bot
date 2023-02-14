@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/clients/telegram/telegram.go" beforeDir="false" afterPath="$PROJECT_DIR$/clients/telegram/telegram.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/events/telegram/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/messages.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/binance/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/binance.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/platform.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/platform.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner_bot" beforeDir="false" afterPath="$PROJECT_DIR$/scanner_bot" afterDir="false" />

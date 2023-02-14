@@ -1,13 +1,13 @@
 package telegram
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"scanner_bot/platform/binance"
-
 	"strings"
 )
 
@@ -117,11 +117,16 @@ func (p *EventProcessor) GetCourses(chatID int) error {
 		return fmt.Errorf("update err: %w", err)
 	}
 
-	result := fmt.Sprintf("data:", data["data"])
-	fmt.Println(result)
-	if err := p.tg.SendMessage(chatID, result); err != nil {
-		return err
-	}
+	var Binance binance.Response
+
+	json.Unmarshal(data, &Binance)
+
+	log.Printf("%+v", Binance.Data)
+
+	var info = binance.BinanceToAdvertise(&Binance)
+	result := msgAdvertise(info)
+	fmt.Printf(result)
+	p.tg.SendMessage(chatID, result)
 
 	return nil
 }

@@ -22,24 +22,7 @@ type Platform struct {
 	client           http.Client
 }
 
-func (p *Platform) GetData(host string, path string, buffer *bytes.Buffer) (map[string]interface{}, error) {
-
-	resp, err := p.DoRequest(host, path, buffer)
-	if err != nil {
-		return nil, err
-	}
-
-	var result map[string]interface{}
-
-	if err := json.Unmarshal(resp, &result); err != nil {
-		return nil, err
-	}
-
-	return result, nil
-
-}
-
-func (p *Platform) DoRequest(host string, path string, query *bytes.Buffer) ([]byte, error) {
+func (p *Platform) GetData(host string, path string, query *bytes.Buffer) ([]byte, error) {
 
 	u := url.URL{
 		Scheme: "https",
@@ -88,9 +71,15 @@ type tokenInfo struct {
 }
 
 type Advertise struct {
-	sellerName string
-	bankName   string
-	cost       int
-	amount     int
-	deals      int
+	PlatformName string
+	SellerName   string
+	Asset        string
+	Fiat         string
+	BankName     string
+	Cost         float64
+	MinLimit     float64
+	MaxLimit     float64
+	SellerDeals  int
+	TradeType    string
+	Available    float64
 }

@@ -14,7 +14,6 @@ const (
 
 	msgUnknownCommand = "Unknown command"
 
-
 	msgSaved = "Saved!"
 
 	msgAlreadyExists = "You have already have this page in your list"
@@ -52,13 +51,36 @@ func platformParser(p *platform.Platform) string {
 	return platformInfo + platformPay + platformRoles
 }
 
-func rolesParser(r *map[string]bool) string{
+func rolesParser(r *map[string]bool) string {
 	var rString strings.Builder
-	for key, value := range *r{
+	for key, value := range *r {
 		if value {
-		rString.WriteString(key + ", ")
+			rString.WriteString(key + ", ")
 		}
 	}
-
 	return rString.String()
+}
+
+func msgAdvertise(a *platform.Advertise) string {
+	platformInfo := fmt.Sprintf("*%s:*\n", a.PlatformName)
+	typeInfo := fmt.Sprintf("*Тип сделки:* %s\n", a.TradeType)
+	bankInfo := fmt.Sprintf("*Банк:* %s\n", a.BankName)
+	priceInfo := fmt.Sprintf("*Цена:* %.2f\n", a.Cost)
+	sellerInfo := fmt.Sprintf("*Продавец:* %s\n", a.SellerName)
+	limitsInfo := fmt.Sprintf("*Лимиты (%s):* %.1f - %.1f\n", a.Fiat, a.MinLimit, a.MaxLimit)
+	amountInfo := fmt.Sprintf("*Доступно (%s):* %.2f\n", a.Asset, a.Available)
+	dealsInfo := fmt.Sprintf("*Сделки:* %d ", a.SellerDeals)
+
+	var result strings.Builder
+	result.WriteString(platformInfo)
+	result.WriteString(typeInfo)
+	result.WriteString(bankInfo)
+	result.WriteString(priceInfo)
+
+	result.WriteString(sellerInfo)
+	result.WriteString(limitsInfo)
+	result.WriteString(amountInfo)
+	result.WriteString(dealsInfo)
+
+	return result.String()
 }
