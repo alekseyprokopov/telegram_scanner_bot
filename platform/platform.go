@@ -7,86 +7,51 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"scanner_bot/config"
+	"scanner_bot/platform/binance"
+	"scanner_bot/platform/bybit"
+	"scanner_bot/platform/huobi"
 )
-
-var (
-	binanceTokens = []string{"USTD", "BTC", "BUSD", "BNB", "ETH", "SHIB"}
-	bybitTokens   = []string{"USDT", "BTC", "ETH", "USDC"}
-	huobiTokens   = []string{
-		"2",  /*USDT*/
-		"1",  /*BTC*/
-		"62", /*USDD*/
-		"4",  /*HT*/
-		"22", /*TRX*/
-		"3",  /*ETH*/
-		"7",  /*XRP*/
-		"8",  /*LTC*/
-	}
-)
-
-const (
-	binanceName    = "binance"
-	p2pBinanceHost = "p2p.binance.com"
-	p2pBinancePath = "bapi/c2c/v2/friendly/c2c/adv/search"
-	binanceAPI     = ""
-
-	byBitName    = "bybit"
-	p2pByBitHost = "api2.bybit.com"
-	p2pByBitPath = "spot/api/otc/item/list"
-	byBitAPI     = ""
-
-	huobiName    = "huobi"
-	p2pHuobiHost = "otc-akm.huobi.com"
-	p2pHuobiPath = "v1/data/trade-market?"
-	huobiAPI     = ""
-)
-
-type platformHandler map[string]Url
-
-type Url struct {
-	P2PHost string
-	P2PPath string
-	ApiUrl  string
-	Tokens  []string
-}
 
 func New() *platformHandler {
 	return &platformHandler{
-		binanceName: Url{
-			P2PHost: p2pBinanceHost,
-			P2PPath: p2pBinancePath,
-			ApiUrl:  binanceAPI,
-			Tokens:  binanceTokens,
+		platformsInfo: map[string]Url{
+			BinanceName: Url{
+				P2PHost:   p2pBinanceHost,
+				P2PPath:   p2pBinancePath,
+				ApiUrl:    binanceAPI,
+				Tokens:    binanceTokens,
+				TradeType: binanceTradeType,
+			},
+			ByBitName: {
+				P2PHost:   p2pByBitHost,
+				P2PPath:   p2pByBitPath,
+				ApiUrl:    byBitAPI,
+				Tokens:    bybitTokens,
+				TradeType: bybitTradeType,
+			},
+			HuobiName: {
+				P2PHost:   p2pHuobiHost,
+				P2PPath:   p2pHuobiPath,
+				ApiUrl:    huobiAPI,
+				Tokens:    huobiTokens,
+				TradeType: huobiTradeType,
+			},
 		},
-		byBitName: {
-			P2PHost: p2pByBitHost,
-			P2PPath: p2pByBitPath,
-			ApiUrl:  byBitAPI,
-			Tokens:  bybitTokens,
-		},
-		huobiName: {
-			P2PHost: p2pHuobiHost,
-			P2PPath: p2pHuobiPath,
-			ApiUrl:  huobiAPI,
-			Tokens:  huobiTokens,
-		},
+		client: http.Client{},
 	}
 }
 
-type Platform struct {
-	PlatformName     string          `json:"platform_name"`
-	PayTypes         []string        `json:"pay_types"`
-	IsActivePlatform bool            `json:"is_active_platform"`
-	Roles            map[string]bool `json:"roles"`
-	client           http.Client
+func (p *platformHandler) TEST() {
+
 }
 
-func (p *Platform) GetData(host string, path string, query *bytes.Buffer) ([]byte, error) {
+func (p *platformHandler) GetAdvertise(platformName string, query *bytes.Buffer) ([]byte, error) {
 
 	u := url.URL{
 		Scheme: "https",
-		Host:   host,
-		Path:   path,
+		Host:   p.platformsInfo[platformName].P2PHost,
+		Path:   p.platformsInfo[platformName].P2PPath,
 	}
 
 	req, err := http.NewRequest(http.MethodPost, u.String(), query)
@@ -118,27 +83,29 @@ func QueryToBytes(params *map[string]interface{}) (*bytes.Buffer, error) {
 	return bytes.NewBuffer(bytesRepresentation), nil
 }
 
-type ExchageInfo struct {
-	name   string
-	tokens map[string]tokenInfo
+func getQuery(platformName string, c *config.Config, token string, tradeType string) (result *bytes.Buffer, err error) {
+	switch platformName {
+	case BinanceName:
+		return binance.GetQuery(c, token, tradeType)
+	case HuobiName:
+		return huobi.GetQuery(c, token, tradeType)
+	case ByBitName:
+		return bybit.GetQuery(c, token, tradeType)
+		//case GarantexName:
+		//	return garantex.GetQuery(c, token, tradeType)
+	}
+
+	return nil, err
 }
 
-type tokenInfo struct {
-	buy  Advertise
-	sell Advertise
-	spot []map[string]string
-}
+func GetPayTypes(platformName string, c *config.Config) []string {
+	var result []string
 
-type Advertise struct {
-	PlatformName string
-	SellerName   string
-	Asset        string
-	Fiat         string
-	BankName     string
-	Cost         float64
-	MinLimit     float64
-	MaxLimit     float64
-	SellerDeals  int
-	TradeType    string
-	Available    float64
+	for key, value := range c.PayTypes {
+		if value {
+			result = append(result, payTypesDict[platformName][key])
+		}
+	}
+
+	return result
 }

@@ -25,40 +25,27 @@ func msgConfig(c *config.Configuration) string {
 	minValue := fmt.Sprintf("*Минимальное значение:* %d \n", c.UserConfig.MinValue)
 	minSpread := fmt.Sprintf("*Минимальный спред:* %.1f \n", c.UserConfig.MinSpread)
 	maxSpread := fmt.Sprintf("*Максимальный спред:* %.1f \n \n", c.UserConfig.MaxSpread)
-	binanceInfo := platformParser(&c.UserConfig.Binance)
-	byBitInfo := platformParser(&c.UserConfig.ByBit)
-	huobiInfo := platformParser(&c.UserConfig.Huobi)
-	garantexInfo := platformParser(&c.UserConfig.Garantex)
+	payTypes := fmt.Sprintf("*Банки:* %.1f \n \n", payTypesToString(c))
 
 	var result strings.Builder
 	result.WriteString(userInfo)
 	result.WriteString(minValue)
 	result.WriteString(minSpread)
 	result.WriteString(maxSpread)
-
-	result.WriteString(binanceInfo)
-	result.WriteString(byBitInfo)
-	result.WriteString(huobiInfo)
-	result.WriteString(garantexInfo)
+	result.WriteString(payTypes)
 
 	return result.String()
 }
 
-func platformParser(p *platform.Platform) string {
-	platformInfo := fmt.Sprintf("_%s:_ \n", strings.ToUpper(p.PlatformName))
-	platformPay := fmt.Sprintf("*Платежные системы:* %s \n", strings.Join(p.PayTypes, ", "))
-	platformRoles := fmt.Sprintf("*Роли:* %s \n \n", rolesParser(&p.Roles))
-	return platformInfo + platformPay + platformRoles
-}
-
-func rolesParser(r *map[string]bool) string {
-	var rString strings.Builder
-	for key, value := range *r {
-		if value {
-			rString.WriteString(key + ", ")
+func payTypesToString(c *config.Configuration) string {
+	data := c.UserConfig.PayTypes
+	var result []string
+	for key, isActive := range data {
+		if isActive {
+			result = append(result, key)
 		}
 	}
-	return rString.String()
+	return strings.Join(result, ", ")
 }
 
 func msgAdvertise(a *platform.Advertise) string {

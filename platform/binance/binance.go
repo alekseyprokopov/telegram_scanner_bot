@@ -14,7 +14,7 @@ func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, 
 		"proMerchantAds": false,
 		"page":           1,
 		"rows":           10,
-		"payTypes":       c.Binance.PayTypes,
+		"payTypes":       platform.GetPayTypes(platform.BinanceName, c),
 		"countries":      []string{},
 		"publisherType":  nil,
 		"transAmount":    c.MinValue,
@@ -29,6 +29,7 @@ func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, 
 	}
 	return result, nil
 }
+
 
 type Response struct {
 	Code          string      `json:"code"`

@@ -13,7 +13,7 @@ func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, 
 		"currency":     11,        //fiat 11-rub
 		"tradeType":    tradeType, //купить - sell, продать - buy
 		"currPage":     1,
-		"payMethod":    c.ByBit.PayTypes,
+		"payMethod":    platform.GetPayTypes(platform.HuobiName, c),
 		"acceptOrder":  0,
 		"country":      "",
 		"blockType":    "general",
@@ -27,7 +27,7 @@ func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, 
 		"isFollowed":   false,
 	}
 
-	result, err := platform.BytesToQuery(&huobiJsonData)
+	result, err := platform.QueryToBytes(&huobiJsonData)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
