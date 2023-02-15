@@ -9,10 +9,69 @@ import (
 	"net/url"
 )
 
-const (
-	BinanceURL  = "p2p.binance.com"
-	BinancePath = "bapi/c2c/v2/friendly/c2c/adv/search"
+var (
+	binanceTokens = []string{"USTD", "BTC", "BUSD", "BNB", "ETH", "SHIB"}
+	bybitTokens   = []string{"USDT", "BTC", "ETH", "USDC"}
+	huobiTokens   = []string{
+		"2",  /*USDT*/
+		"1",  /*BTC*/
+		"62", /*USDD*/
+		"4",  /*HT*/
+		"22", /*TRX*/
+		"3",  /*ETH*/
+		"7",  /*XRP*/
+		"8",  /*LTC*/
+	}
 )
+
+const (
+	binanceName    = "binance"
+	p2pBinanceHost = "p2p.binance.com"
+	p2pBinancePath = "bapi/c2c/v2/friendly/c2c/adv/search"
+	binanceAPI     = ""
+
+	byBitName    = "bybit"
+	p2pByBitHost = "api2.bybit.com"
+	p2pByBitPath = "spot/api/otc/item/list"
+	byBitAPI     = ""
+
+	huobiName    = "huobi"
+	p2pHuobiHost = "otc-akm.huobi.com"
+	p2pHuobiPath = "v1/data/trade-market?"
+	huobiAPI     = ""
+)
+
+type platformHandler map[string]Url
+
+type Url struct {
+	P2PHost string
+	P2PPath string
+	ApiUrl  string
+	Tokens  []string
+}
+
+func New() *platformHandler {
+	return &platformHandler{
+		binanceName: Url{
+			P2PHost: p2pBinanceHost,
+			P2PPath: p2pBinancePath,
+			ApiUrl:  binanceAPI,
+			Tokens:  binanceTokens,
+		},
+		byBitName: {
+			P2PHost: p2pByBitHost,
+			P2PPath: p2pByBitPath,
+			ApiUrl:  byBitAPI,
+			Tokens:  bybitTokens,
+		},
+		huobiName: {
+			P2PHost: p2pHuobiHost,
+			P2PPath: p2pHuobiPath,
+			ApiUrl:  huobiAPI,
+			Tokens:  huobiTokens,
+		},
+	}
+}
 
 type Platform struct {
 	PlatformName     string          `json:"platform_name"`
