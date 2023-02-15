@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"scanner_bot/platform"
 )
 
 type Configuration struct {
@@ -15,7 +14,6 @@ type Config struct {
 	MinValue  int                          `json:"min_value"`
 	MinSpread float64                      `json:"min_spread"`
 	MaxSpread float64                      `json:"max_spread"`
-	Platforms map[string]platform.Platform `json:"platforms"`
 	PayTypes  map[string]bool              `json:"pay_types"`
 }
 

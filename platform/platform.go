@@ -8,9 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"scanner_bot/config"
-	"scanner_bot/platform/binance"
-	"scanner_bot/platform/bybit"
-	"scanner_bot/platform/huobi"
 )
 
 func New() *platformHandler {
@@ -86,11 +83,11 @@ func QueryToBytes(params *map[string]interface{}) (*bytes.Buffer, error) {
 func getQuery(platformName string, c *config.Config, token string, tradeType string) (result *bytes.Buffer, err error) {
 	switch platformName {
 	case BinanceName:
-		return binance.GetQuery(c, token, tradeType)
+		return binanceGetQuery(c, token, tradeType)
 	case HuobiName:
-		return huobi.GetQuery(c, token, tradeType)
+		return huobiGetQuery(c, token, tradeType)
 	case ByBitName:
-		return bybit.GetQuery(c, token, tradeType)
+		return byBitGetQuery(c, token, tradeType)
 		//case GarantexName:
 		//	return garantex.GetQuery(c, token, tradeType)
 	}

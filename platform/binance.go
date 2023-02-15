@@ -1,20 +1,20 @@
-package binance
+package platform
 
 import (
 	"bytes"
 	"fmt"
 	"scanner_bot/config"
-	"scanner_bot/platform"
 	"strconv"
+	"strings"
 )
 
-func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
+func binanceGetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
 
 	var BinanceJsonData = map[string]interface{}{
 		"proMerchantAds": false,
 		"page":           1,
 		"rows":           10,
-		"payTypes":       platform.GetPayTypes(platform.BinanceName, c),
+		"payTypes":       GetPayTypes(BinanceName, c),
 		"countries":      []string{},
 		"publisherType":  nil,
 		"transAmount":    c.MinValue,
@@ -23,15 +23,14 @@ func GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, 
 		"tradeType":      tradeType, /*BUY(Купить) or SELL(продать)*/
 	}
 
-	result, err := platform.QueryToBytes(&BinanceJsonData)
+	result, err := QueryToBytes(&BinanceJsonData)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
 	return result, nil
 }
 
-
-type Response struct {
+type binanceResponse struct {
 	Code          string      `json:"code"`
 	Message       interface{} `json:"message"`
 	MessageDetail interface{} `json:"messageDetail"`
@@ -78,17 +77,17 @@ type Response struct {
 	Success bool `json:"success"`
 }
 
-func BinanceToAdvertise(r *Response) *platform.Advertise {
+func binanceResponseToAdvertise(r *binanceResponse) *Advertise {
 	cost, _ := strconv.ParseFloat(r.Data[0].Adv.Price, 64)
 	minLimit, _ := strconv.ParseFloat(r.Data[0].Adv.MinSingleTransAmount, 64)
 	maxLimit, _ := strconv.ParseFloat(r.Data[0].Adv.MaxSingleTransAmount, 64)
 	available, _ := strconv.ParseFloat(r.Data[0].Adv.DynamicMaxSingleTransQuantity, 64)
-	return &platform.Advertise{
-		PlatformName: "binance",
+	return &Advertise{
+		PlatformName: BinanceName,
 		SellerName:   r.Data[0].Advertiser.NickName,
 		Asset:        r.Data[0].Adv.Asset,
 		Fiat:         r.Data[0].Adv.FiatUnit,
-		BankName:     payTypesToString(r),
+		BankName:     binancePayTypesToString(r),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
@@ -98,16 +97,12 @@ func BinanceToAdvertise(r *Response) *platform.Advertise {
 	}
 }
 
-func payTypesToString(r *Response) string {
+func binancePayTypesToString(r *binanceResponse) string {
 	data := r.Data[0].Adv.TradeMethods
-	result := ""
-	for i, k := range data {
-		if i != len(data)-1 {
-			result += k.TradeMethodName + ", "
-		} else {
-			result += k.TradeMethodName
-		}
+	var result []string
+	for _, k := range data {
+		result = append(result, k.TradeMethodName)
 
 	}
-	return result
+	return strings.Join(result, ", ")
 }

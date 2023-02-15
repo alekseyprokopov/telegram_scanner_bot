@@ -5,15 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81dd0e54-a279-4d6e-97a3-bd6ffb0ed11d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/platform/platformInfo.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/platform/type.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/storage.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/events/telegram/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/messages.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/binance/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/binance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/bybit/bybit.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit/bybit.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/huobi/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/huobi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/binance/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/bybit/bybit.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/huobi/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/platform.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/platform.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,6 +62,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/platform" />
       <recent name="$PROJECT_DIR$/platform/binance" />
     </key>
   </component>
