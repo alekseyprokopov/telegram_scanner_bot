@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/url"
 	"scanner_bot/config"
-	"scanner_bot/platform"
+	"scanner_bot/platforms"
 	"strings"
 )
 
@@ -102,29 +102,29 @@ func (p *EventProcessor) GetCourses(chatID int) error {
 	conf, err := p.storage.GetConfig(chatID)
 
 	userConfig := &conf.UserConfig
+	platformName := platforms.BinanceName
 
-	query, err := platform.GetQuery(userConfig, "USDT", "BUY")
+	query, err := platforms.GetQuery(platformName, userConfig, "USDT", "BUY")
 
 	if err != nil {
 		return fmt.Errorf("can't get query: %w", err)
 	}
 
-	platf := conf.UserConfig
-	item := platf.Binance
-	data, err := item.GetData(platform.BinanceURL, platform.BinancePath, query)
 	if err != nil {
 		return fmt.Errorf("update err: %w", err)
 	}
+	data, err := p.platformHandler.GetAdvertise(platformName, query)
 
-	var Binance platform.Response
+	var Binance platforms.BinanceResponse
 
 	json.Unmarshal(data, &Binance)
 
-	log.Printf("%+v", Binance.Data)
 
-	var info = platform.BinanceToAdvertise(&Binance)
+	var info = platforms.BinanceResponseToAdvertise(&Binance)
+	log.Printf("advertise: %+v", info)
 	result := msgAdvertise(info)
-	fmt.Printf(result)
+	log.Printf("result: %+v", result)
+
 	p.tg.SendMessage(chatID, result)
 
 	return nil

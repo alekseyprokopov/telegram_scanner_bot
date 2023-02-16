@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -96,7 +95,6 @@ func (c *Client) SendMessage(chatId int, text string) error {
 		Host:   c.host,
 		Path:   path.Join(c.basePath, sendMessageMethod),
 	}
-	log.Println(u.String())
 
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatId))

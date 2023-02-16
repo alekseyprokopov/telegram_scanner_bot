@@ -3,7 +3,7 @@ package telegram
 import (
 	"fmt"
 	"scanner_bot/config"
-	"scanner_bot/platform"
+	"scanner_bot/platforms"
 	"strings"
 )
 
@@ -24,8 +24,8 @@ func msgConfig(c *config.Configuration) string {
 
 	minValue := fmt.Sprintf("*Минимальное значение:* %d \n", c.UserConfig.MinValue)
 	minSpread := fmt.Sprintf("*Минимальный спред:* %.1f \n", c.UserConfig.MinSpread)
-	maxSpread := fmt.Sprintf("*Максимальный спред:* %.1f \n \n", c.UserConfig.MaxSpread)
-	payTypes := fmt.Sprintf("*Банки:* %.1f \n \n", payTypesToString(c))
+	maxSpread := fmt.Sprintf("*Максимальный спред:* %.1f \n", c.UserConfig.MaxSpread)
+	payTypes := fmt.Sprintf("*Банки:* %s \n \n", payTypesToString(c))
 
 	var result strings.Builder
 	result.WriteString(userInfo)
@@ -48,7 +48,7 @@ func payTypesToString(c *config.Configuration) string {
 	return strings.Join(result, ", ")
 }
 
-func msgAdvertise(a *platform.Advertise) string {
+func msgAdvertise(a *platforms.Advertise) string {
 	platformInfo := fmt.Sprintf("*%s:*\n", a.PlatformName)
 	typeInfo := fmt.Sprintf("*Тип сделки:* %s\n", a.TradeType)
 	bankInfo := fmt.Sprintf("*Банк:* %s\n", a.BankName)
@@ -56,7 +56,7 @@ func msgAdvertise(a *platform.Advertise) string {
 	sellerInfo := fmt.Sprintf("*Продавец:* %s\n", a.SellerName)
 	limitsInfo := fmt.Sprintf("*Лимиты (%s):* %.1f - %.1f\n", a.Fiat, a.MinLimit, a.MaxLimit)
 	amountInfo := fmt.Sprintf("*Доступно (%s):* %.2f\n", a.Asset, a.Available)
-	dealsInfo := fmt.Sprintf("*Сделки:* %d ", a.SellerDeals)
+	dealsInfo := fmt.Sprintf("*Сделки:* %d\n", a.SellerDeals)
 
 	var result strings.Builder
 	result.WriteString(platformInfo)
