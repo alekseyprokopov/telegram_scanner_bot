@@ -53,11 +53,12 @@ type bybitResponse struct {
 
 func BybitResponseToAdvertise(response *[]byte) (*Advertise, error) {
 	var data bybitResponse
-	item := data.Result.Items[0]
 	err := json.Unmarshal(*response, &data)
+
 	if err != nil {
 		return nil, fmt.Errorf("cant' unmarshall data from binance response: %w", err)
 	}
+	item := data.Result.Items[0]
 
 	cost, _ := strconv.ParseFloat(item.Price, 64)
 	minLimit, _ := strconv.ParseFloat(item.MinAmount, 64)

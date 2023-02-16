@@ -85,22 +85,22 @@ func BinanceResponseToAdvertise(response *[]byte) (*Advertise, error) {
 	if err != nil {
 		return nil, fmt.Errorf("cant' unmarshall data from binance response: %w", err)
 	}
-
-	cost, _ := strconv.ParseFloat(data.Data[0].Adv.Price, 64)
-	minLimit, _ := strconv.ParseFloat(data.Data[0].Adv.MinSingleTransAmount, 64)
-	maxLimit, _ := strconv.ParseFloat(data.Data[0].Adv.MaxSingleTransAmount, 64)
-	available, _ := strconv.ParseFloat(data.Data[0].Adv.DynamicMaxSingleTransQuantity, 64)
+	item :=data.Data[0]
+	cost, _ := strconv.ParseFloat(item.Adv.Price, 64)
+	minLimit, _ := strconv.ParseFloat(item.Adv.MinSingleTransAmount, 64)
+	maxLimit, _ := strconv.ParseFloat(item.Adv.MaxSingleTransAmount, 64)
+	available, _ := strconv.ParseFloat(item.Adv.DynamicMaxSingleTransQuantity, 64)
 	return &Advertise{
 		PlatformName: BinanceName,
-		SellerName:   data.Data[0].Advertiser.NickName,
-		Asset:        data.Data[0].Adv.Asset,
-		Fiat:         data.Data[0].Adv.FiatUnit,
+		SellerName:   item.Advertiser.NickName,
+		Asset:        item.Adv.Asset,
+		Fiat:         item.Adv.FiatUnit,
 		BankName:     binancePayTypesToString(&data),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
-		SellerDeals:  data.Data[0].Advertiser.MonthOrderCount,
-		TradeType:    data.Data[0].Adv.TradeType,
+		SellerDeals:  item.Advertiser.MonthOrderCount,
+		TradeType:    item.Adv.TradeType,
 		Available:    available,
 	}, nil
 }
