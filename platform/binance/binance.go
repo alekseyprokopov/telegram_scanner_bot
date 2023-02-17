@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"scanner_bot/config"
 	"scanner_bot/platform"
@@ -12,28 +13,51 @@ import (
 )
 
 type Platform struct {
-	platform.PlatformType
+	platform.PlatformTemplate
 }
 
 func New(name string, url string, payTypes []string, tokens []string, allTokens []string) *Platform {
 	return &Platform{
-		platform.PlatformType{
+		platform.PlatformTemplate{
 			Name:           name,
 			Url:            url,
 			PayTypes:       payTypes,
 			PlatformTokens: tokens,
-			AllTokents:     allTokens,
+			AllTokens:      allTokens,
 			Client:         http.Client{}},
 	}
 }
 
-func (p *Platform) GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
+func (p *Platform) GetAdvertise(c *config.Configuration) (*platform.Advertise, error) {
+	userConfig := &c.UserConfig
+
+	query, err := p.getQuery(userConfig, "USDT", "BUY")
+	if err != nil {
+		return nil, fmt.Errorf("can't get query: %w", err)
+	}
+
+	response, err := p.DoRequest(query)
+	if err != nil {
+		return nil, fmt.Errorf("can't do request to get binance response: %w", err)
+	}
+
+	advertise, err := p.responseToAdvertise(&response)
+	if err != nil {
+		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
+	}
+
+	log.Printf("advertise: %+v", advertise)
+
+	return advertise, nil
+}
+
+func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
 
 	var BinanceJsonData = map[string]interface{}{
 		"proMerchantAds": false,
 		"page":           1,
 		"rows":           10,
-		"payTypes":       platform.GetPayTypes(platform.BinanceName, c),
+		"payTypes":       p.GetPayTypes(c),
 		"countries":      []string{},
 		"publisherType":  nil,
 		"transAmount":    c.MinValue,
@@ -42,14 +66,14 @@ func (p *Platform) GetQuery(c *config.Config, token string, tradeType string) (*
 		"tradeType":      tradeType, /*BUY(Купить) or SELL(продать)*/
 	}
 
-	result, err := platform.QueryToBytes(&BinanceJsonData)
+	result, err := p.QueryToBytes(&BinanceJsonData)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
 	return result, nil
 }
 
-func ResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
+func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 
 	err := json.Unmarshal(*response, &data)
@@ -66,7 +90,7 @@ func ResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 		SellerName:   item.Advertiser.NickName,
 		Asset:        item.Adv.Asset,
 		Fiat:         item.Adv.FiatUnit,
-		BankName:     binancePayTypesToString(&data),
+		BankName:     payTypesToString(&data),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
@@ -76,7 +100,7 @@ func ResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	}, nil
 }
 
-func binancePayTypesToString(r *Response) string {
+func payTypesToString(r *Response) string {
 	data := r.Data[0].Adv.TradeMethods
 	var result []string
 	for _, k := range data {
