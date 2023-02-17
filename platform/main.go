@@ -1,4 +1,4 @@
-package platforms
+package platform
 
 import (
 	"bytes"
@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"scanner_bot/config"
+	"scanner_bot/platform/binance"
 )
 
 func New() *PlatformHandler {
@@ -54,11 +55,11 @@ func (p *PlatformHandler) GetAdvertise(c *config.Configuration) (*Advertise, err
 
 	response, err := p.getAdvertiseData(platformName, query)
 
-	var Binance BinanceResponse
+	var Binance binance.BinanceResponse
 
 	json.Unmarshal(data, &Binance)
 
-	var resultAdvertise = BinanceResponseToAdvertise(&Binance)
+	var resultAdvertise = binance.BinanceResponseToAdvertise(&Binance)
 	log.Printf("advertise: %+v", resultAdvertise)
 	result := msgAdvertise(info)
 	log.Printf("result: %+v", result)
@@ -102,7 +103,7 @@ func (p *PlatformHandler) getAdvertiseData(platformName string, query *bytes.Buf
 func ResponseToAdvertise(platformName string, response *[]byte) (*Advertise, error) {
 	switch platformName {
 	case BinanceName:
-		return BinanceResponseToAdvertise(response)
+		return binance.BinanceResponseToAdvertise(response)
 	case HuobiName:
 		return HuobiRespinseToAdvertise(response)
 	case ByBitName:

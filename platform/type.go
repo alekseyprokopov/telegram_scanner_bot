@@ -1,26 +1,26 @@
-package platforms
+package platform
 
 import "net/http"
 
 type PlatformHandler struct {
-	platformsInfo map[string]Url
+	platformsInfo map[string]Platform
 	client        http.Client
 }
 
-type Url struct {
-	P2PHost   string
-	P2PPath   string
-	ApiUrl    string
-	Tokens    []string
-	TradeType []string
+type Platform interface {
+	GetAdvertise()
+	GetResultInfo()
+	GetQuery()
+	ResponseToADvertise()
 }
 
-type Platform struct {
-	PlatformName     string          `json:"platform_name"`
-	PayTypes         []string        `json:"pay_types"`
-	IsActivePlatform bool            `json:"is_active_platform"`
-	Roles            map[string]bool `json:"roles"`
-	client           http.Client
+type PlatformType struct {
+	Name             string   `json:"platform_name"`
+	Url              string   `json:"url"`
+	PayTypes         []string `json:"pay_types"`
+	PlatformTokens   []string `json:"platform_tokens"`
+	AllTokents       []string `json:"all_tokents"`
+	Client           http.Client
 }
 
 type Advertise struct {

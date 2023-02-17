@@ -1,10 +1,11 @@
-package platforms
+package bybit
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"scanner_bot/config"
+	"scanner_bot/platform"
 	"strconv"
 	"strings"
 )
@@ -14,14 +15,14 @@ func bybitGetQuery(c *config.Config, token string, tradeType string) (*bytes.Buf
 		"userId":     "",
 		"tokenId":    token,
 		"currencyID": "RUB",
-		"payment":    GetPayTypes(ByBitName, c),
+		"payment":    platform.GetPayTypes(platform.ByBitName, c),
 		"side":       "1",
 		"size":       "10",
 		"page":       "1",
 		"amount":     c.MinValue,
 	}
 
-	result, err := QueryToBytes(&byBitJsonData)
+	result, err := platform.QueryToBytes(&byBitJsonData)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
@@ -51,7 +52,7 @@ type bybitResponse struct {
 	ExtInfo interface{} `json:"ext_info"`
 }
 
-func BybitResponseToAdvertise(response *[]byte) (*Advertise, error) {
+func BybitResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data bybitResponse
 	err := json.Unmarshal(*response, &data)
 
@@ -64,8 +65,8 @@ func BybitResponseToAdvertise(response *[]byte) (*Advertise, error) {
 	minLimit, _ := strconv.ParseFloat(item.MinAmount, 64)
 	maxLimit, _ := strconv.ParseFloat(item.MaxAmount, 64)
 	available, _ := strconv.ParseFloat(item.LastQuantity, 64)
-	return &Advertise{
-		PlatformName: BinanceName,
+	return &platform.Advertise{
+		PlatformName: platform.BinanceName,
 		SellerName:   item.NickName,
 		Asset:        item.TokenName,
 		Fiat:         item.CurrencyID,
@@ -87,7 +88,7 @@ func bybitTradeType(i int) string {
 }
 
 func bybitPayTypesToString(item []int) string {
-	dict := PayTypesDict[ByBitName]
+	dict := platform.PayTypesDict[platform.ByBitName]
 	var result []string
 
 	for _, value := range item {

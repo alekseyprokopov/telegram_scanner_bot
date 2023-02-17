@@ -1,10 +1,13 @@
-package platforms
+package platform
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"scanner_bot/config"
+	"scanner_bot/platform/binance"
+	"scanner_bot/platform/bybit"
+	"scanner_bot/platform/huobi"
 )
 
 var (
@@ -43,40 +46,33 @@ var (
 )
 
 const (
-	BinanceName    = "binance"
-	P2PBinanceHost = "p2p.binance.com"
-	P2PBinancePath = "bapi/c2c/v2/friendly/c2c/adv/search"
-	BinanceAPI     = ""
+	BinanceName   = "binance"
+	P2PBinanceURL = "p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
 
 	ByBitName    = "bybit"
-	P2PByBitHost = "api2.bybit.com"
-	P2PByBitPath = "spot/api/otc/item/list"
-	ByBitAPI     = ""
+	P2PByBitURL  = "api2.bybit.com/spot/api/otc/item/list"
+
 
 	HuobiName    = "huobi"
-	P2PHuobiHost = "otc-akm.huobi.com"
-	P2PHuobiPath = "v1/data/trade-market?"
-	HuobiAPI     = ""
+	P2PHuobiURL = "otc-akm.huobi.com/v1/data/trade-market?"
 
 	GarantexName = "garantex"
 )
 
-
 func GetQuery(platformName string, c *config.Config, token string, tradeType string) (result *bytes.Buffer, err error) {
 	switch platformName {
 	case BinanceName:
-		return binanceGetQuery(c, token, tradeType)
+		return binance.binanceGetQuery(c, token, tradeType)
 	case HuobiName:
-		return huobiGetQuery(c, token, tradeType)
+		return huobi.huobiGetQuery(c, token, tradeType)
 	case ByBitName:
-		return bybitGetQuery(c, token, tradeType)
+		return bybit.bybitGetQuery(c, token, tradeType)
 		//case GarantexName:
 		//	return garantex.GetQuery(c, token, tradeType)
 	}
 
 	return nil, err
 }
-
 
 func QueryToBytes(params *map[string]interface{}) (*bytes.Buffer, error) {
 	bytesRepresentation, err := json.Marshal(*params)
@@ -85,8 +81,6 @@ func QueryToBytes(params *map[string]interface{}) (*bytes.Buffer, error) {
 	}
 	return bytes.NewBuffer(bytesRepresentation), nil
 }
-
-
 
 func GetPayTypes(platformName string, c *config.Config) []string {
 	var result []string

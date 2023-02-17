@@ -3,7 +3,7 @@ package telegram
 import (
 	"fmt"
 	"scanner_bot/config"
-	"scanner_bot/platforms"
+	"scanner_bot/platform"
 	"strings"
 )
 
@@ -48,7 +48,7 @@ func payTypesToString(c *config.Configuration) string {
 	return strings.Join(result, ", ")
 }
 
-func msgAdvertise(a *platforms.Advertise) string {
+func msgAdvertise(a *platform.Advertise) string {
 	platformInfo := fmt.Sprintf("*%s:*\n", a.PlatformName)
 	typeInfo := fmt.Sprintf("*Тип сделки:* %s\n", a.TradeType)
 	bankInfo := fmt.Sprintf("*Банк:* %s\n", a.BankName)

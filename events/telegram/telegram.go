@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"scanner_bot/clients/telegram"
 	"scanner_bot/events"
-	"scanner_bot/platforms"
+	"scanner_bot/platform"
 	"scanner_bot/storage"
 )
 
@@ -13,7 +13,7 @@ type EventProcessor struct {
 	tg      *telegram.Client
 	offset  int
 	storage         storage.Storage
-	platformHandler platforms.PlatformHandler
+	platformHandler platform.PlatformHandler
 }
 
 type Meta struct {
@@ -28,7 +28,7 @@ func New(client *telegram.Client, storage storage.Storage) *EventProcessor {
 	return &EventProcessor{
 		tg:      client,
 		storage: storage,
-		platformHandler: *platforms.New(),
+		platformHandler: *platform.New(),
 	}
 
 }

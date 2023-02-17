@@ -46,7 +46,6 @@ func token() string {
 		"",
 		"token for access to telegram",
 	)
-
 	//помещает значение в Токен
 	flag.Parse()
 

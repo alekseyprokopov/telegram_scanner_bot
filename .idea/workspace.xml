@@ -5,10 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81dd0e54-a279-4d6e-97a3-bd6ffb0ed11d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/main-data.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/platform/binance/resonse.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platforms/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platforms/binance.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platforms/bybit.go" beforeDir="false" afterPath="$PROJECT_DIR$/platforms/bybit.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platforms/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platforms/huobi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/events/telegram/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/messages.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/events/telegram/telegram.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/telegram.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platforms/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/binance.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platforms/bybit.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit/bybit.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platforms/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/huobi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platforms/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platforms/platformData.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/platformData.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platforms/type.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/type.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,11 +68,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/platforms/bybit" />
+      <recent name="$PROJECT_DIR$/platforms/huobi" />
+      <recent name="$PROJECT_DIR$/platforms/binance" />
       <recent name="$PROJECT_DIR$/platforms" />
       <recent name="$PROJECT_DIR$/platforms/platformsData" />
-      <recent name="$PROJECT_DIR$/platforms/houbi" />
-      <recent name="$PROJECT_DIR$/platforms/bybit" />
-      <recent name="$PROJECT_DIR$/platforms/binance" />
     </key>
   </component>
   <component name="RunManager">
@@ -73,23 +82,6 @@
       <kind value="FILE" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="telegram_scanner_bot" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="telegram_scanner_bot" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="DIRECTORY" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
       <method v="2" />
     </configuration>
   </component>

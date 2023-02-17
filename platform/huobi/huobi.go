@@ -1,10 +1,11 @@
-package platforms
+package huobi
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"scanner_bot/config"
+	"scanner_bot/platform"
 	"strconv"
 	"strings"
 )
@@ -15,7 +16,7 @@ func huobiGetQuery(c *config.Config, token string, tradeType string) (*bytes.Buf
 		"currency":     11,        //fiat 11-rub
 		"tradeType":    tradeType, //купить - sell, продать - buy
 		"currPage":     1,
-		"payMethod":    GetPayTypes(HuobiName, c),
+		"payMethod":    platform.GetPayTypes(platform.HuobiName, c),
 		"acceptOrder":  0,
 		"country":      "",
 		"blockType":    "general",
@@ -29,7 +30,7 @@ func huobiGetQuery(c *config.Config, token string, tradeType string) (*bytes.Buf
 		"isFollowed":   false,
 	}
 
-	result, err := QueryToBytes(&huobiJsonData)
+	result, err := platform.QueryToBytes(&huobiJsonData)
 	if err != nil {
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
@@ -68,7 +69,7 @@ type huobiPayMethod struct {
 	Name        string `json:"name"`
 }
 
-func HuobiResponseToAdvertise(response *[]byte) (*Advertise, error) {
+func HuobiResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data huobiResponse
 	err := json.Unmarshal(*response, &data)
 	if err != nil {
@@ -80,8 +81,8 @@ func HuobiResponseToAdvertise(response *[]byte) (*Advertise, error) {
 	minLimit, _ := strconv.ParseFloat(item.MinTradeLimit, 64)
 	maxLimit, _ := strconv.ParseFloat(item.MaxTradeLimit, 64)
 	available, _ := strconv.ParseFloat(item.TradeCount, 64)
-	return &Advertise{
-		PlatformName: BinanceName,
+	return &platform.Advertise{
+		PlatformName: platform.BinanceName,
 		SellerName:   item.UserName,
 		Asset:        string(item.CoinID),
 		Fiat:         string(item.Currency),
