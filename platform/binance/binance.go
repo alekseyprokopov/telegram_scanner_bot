@@ -2,8 +2,10 @@ package binance
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/adshao/go-binance/v2"
 	"log"
 	"net/http"
 	"scanner_bot/config"
@@ -14,24 +16,27 @@ import (
 
 type Platform struct {
 	platform.PlatformTemplate
+	Binance *binance.Client
 }
 
 func New(name string, url string, payTypes []string, tokens []string, allTokens []string) *Platform {
 	return &Platform{
-		platform.PlatformTemplate{
+		PlatformTemplate: platform.PlatformTemplate{
 			Name:           name,
 			Url:            url,
 			PayTypes:       payTypes,
 			PlatformTokens: tokens,
 			AllTokens:      allTokens,
 			Client:         http.Client{}},
+		Binance: binance.NewClient("", ""),
 	}
+
 }
 
-func (p *Platform) GetAdvertise(c *config.Configuration) (*platform.Advertise, error) {
+func (p *Platform) GetAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 
-	query, err := p.getQuery(userConfig, "USDT", "BUY")
+	query, err := p.getQuery(userConfig, token, tradeType)
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
@@ -49,6 +54,26 @@ func (p *Platform) GetAdvertise(c *config.Configuration) (*platform.Advertise, e
 	log.Printf("advertise: %+v", advertise)
 
 	return advertise, nil
+}
+
+func (p *Platform) GetSpotData() (*map[string]float64, error) {
+	allTokens := p.AllTokens
+	set := *p.CreatePairsSet(allTokens)
+	result := map[string]float64{}
+
+	prices, err := p.Binance.NewListPricesService().Do(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("can't get spot data: %w", err)
+	}
+	for _, p := range prices {
+		if set[p.Symbol] {
+			result[p.Symbol], _ = strconv.ParseFloat(p.Price, 64)
+		}
+	}
+	if err != nil {
+		return nil, fmt.Errorf("can't parse price to float: %w", err)
+	}
+	return &result, nil
 }
 
 func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
@@ -86,7 +111,7 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 	maxLimit, _ := strconv.ParseFloat(item.Adv.MaxSingleTransAmount, 64)
 	available, _ := strconv.ParseFloat(item.Adv.DynamicMaxSingleTransQuantity, 64)
 	return &platform.Advertise{
-		PlatformName: platform.BinanceName,
+		PlatformName: p.Name,
 		SellerName:   item.Advertiser.NickName,
 		Asset:        item.Adv.Asset,
 		Fiat:         item.Adv.FiatUnit,

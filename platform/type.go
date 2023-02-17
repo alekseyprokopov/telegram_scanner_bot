@@ -47,6 +47,16 @@ func (p *PlatformTemplate) GetPayTypes(c *config.Config) []string {
 	}
 	return result
 }
+func (p *PlatformTemplate) CreatePairsSet(data []string) *map[string]bool {
+	set := map[string]bool{}
+	for i := 0; i < len(data)-1; i++ {
+		for j := i + 1; j < len(data); j++ {
+			set[data[i]+data[j]] = true
+			set[data[j]+data[i]] = true
+		}
+	}
+	return &set
+}
 
 func (p *PlatformTemplate) DoRequest(query *bytes.Buffer) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodPost, p.Url, query)
