@@ -15,19 +15,20 @@ type PlatformHandler struct {
 }
 
 type Platform interface {
-	GetAdvertise()
-	GetResultInfo()
-	GetQuery()
-	ResponseToADvertise()
+	//GetAdvertise(c *config.Configuration, token string, tradeType string) (*Advertise, error)
+	GetResult(c *config.Configuration) (*ResultPlatformData, error)
+	//GetQuery()
+	//ResponseToAdvertise()
 }
 
 type PlatformTemplate struct {
-	Name           string   `json:"platform_name"`
-	Url            string   `json:"url"`
-	PayTypes       []string `json:"pay_types"`
-	PlatformTokens []string `json:"platform_tokens"`
-	AllTokens      []string `json:"all_tokents"`
-	Client         http.Client
+	Name       string   `json:"platform_name"`
+	Url        string   `json:"url"`
+	PayTypes   []string `json:"pay_types"`
+	TradeTypes []string `json:"trade_types"`
+	Tokens     []string `json:"platform_tokens"`
+	AllTokens  []string `json:"all_tokents"`
+	Client     http.Client
 }
 
 func (p *PlatformTemplate) QueryToBytes(params *map[string]interface{}) (*bytes.Buffer, error) {
@@ -97,11 +98,11 @@ type Advertise struct {
 
 type ResultPlatformData struct {
 	Name   string
-	Spot   []map[string]float64
+	Spot   map[string]float64
 	Tokens map[string]TokenInfo
 }
 
 type TokenInfo struct {
-	buy  Advertise
-	sell Advertise
+	Buy  Advertise
+	Sell Advertise
 }

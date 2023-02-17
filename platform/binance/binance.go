@@ -19,24 +19,50 @@ type Platform struct {
 	Binance *binance.Client
 }
 
-func New(name string, url string, payTypes []string, tokens []string, allTokens []string) *Platform {
+func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
 	return &Platform{
 		PlatformTemplate: platform.PlatformTemplate{
-			Name:           name,
-			Url:            url,
-			PayTypes:       payTypes,
-			PlatformTokens: tokens,
-			AllTokens:      allTokens,
-			Client:         http.Client{}},
+			Name:       name,
+			Url:        url,
+			TradeTypes: tradeTypes,
+			PayTypes:   payTypes,
+			Tokens:     tokens,
+			AllTokens:  allTokens,
+			Client:     http.Client{}},
 		Binance: binance.NewClient("", ""),
 	}
 
 }
 
+func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
+	result := platform.ResultPlatformData{}
+	spotData, err := p.GetSpotData()
+	if err != nil {
+		return nil, fmt.Errorf("can't get spot data: %w", err)
+	}
+
+	result.Name = p.Name
+	result.Spot = *spotData
+
+	for _, token := range p.Tokens {
+		buy, err := p.GetAdvertise(c, token, p.TradeTypes[0])
+		sell, err := p.GetAdvertise(c, token, p.TradeTypes[1])
+		if err != nil {
+			return nil, fmt.Errorf("can't get advertise: %w", err)
+		}
+		result.Tokens[token] = platform.TokenInfo{
+			Buy:  *buy,
+			Sell: *sell,
+		}
+
+	}
+	return &result, nil
+}
+
 func (p *Platform) GetAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 
-	query, err := p.getQuery(userConfig, token, tradeType)
+	query, err := p.GetQuery(userConfig, token, tradeType)
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
@@ -46,7 +72,7 @@ func (p *Platform) GetAdvertise(c *config.Configuration, token string, tradeType
 		return nil, fmt.Errorf("can't do request to get binance response: %w", err)
 	}
 
-	advertise, err := p.responseToAdvertise(&response)
+	advertise, err := p.ResponseToAdvertise(&response)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
@@ -76,7 +102,7 @@ func (p *Platform) GetSpotData() (*map[string]float64, error) {
 	return &result, nil
 }
 
-func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
+func (p *Platform) GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
 
 	var BinanceJsonData = map[string]interface{}{
 		"proMerchantAds": false,
@@ -98,7 +124,7 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 	return result, nil
 }
 
-func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
+func (p *Platform) ResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 
 	err := json.Unmarshal(*response, &data)
