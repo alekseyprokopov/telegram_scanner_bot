@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"scanner_bot/config"
 )
@@ -60,6 +61,9 @@ func (p *PlatformTemplate) CreatePairsSet(data []string) *map[string]bool {
 }
 
 func (p *PlatformTemplate) DoRequest(query *bytes.Buffer) ([]byte, error) {
+	log.Println("query DoREQUEST:", query)
+	log.Println("p.url:", p.Url)
+
 	req, err := http.NewRequest(http.MethodPost, p.Url, query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do binance request: %w", err)
@@ -68,12 +72,13 @@ func (p *PlatformTemplate) DoRequest(query *bytes.Buffer) ([]byte, error) {
 	req.Header.Set("accept", "*/*")
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("user-agent", `"Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110"`)
-
+	log.Println("CLIENT ", p.Client)
 	resp, err := p.Client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("can't get response: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
+	log.Println("response DoREQUEST:", resp.Body)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

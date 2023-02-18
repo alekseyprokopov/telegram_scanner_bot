@@ -15,23 +15,23 @@ import (
 )
 
 type Platform struct {
-	platform.PlatformTemplate
+	*platform.PlatformTemplate
 	Binance *binance.Client
 }
 
 func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
 	return &Platform{
-		PlatformTemplate: platform.PlatformTemplate{
+		PlatformTemplate: &platform.PlatformTemplate{
 			Name:       name,
 			Url:        url,
 			TradeTypes: tradeTypes,
 			PayTypes:   payTypes,
 			Tokens:     tokens,
 			AllTokens:  allTokens,
-			Client:     http.Client{}},
+			Client:     http.Client{},
+		},
 		Binance: binance.NewClient("", ""),
 	}
-
 }
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
@@ -43,6 +43,7 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 
 	result.Name = p.Name
 	result.Spot = *spotData
+	result.Tokens = map[string]platform.TokenInfo{}
 
 	for _, token := range p.Tokens {
 		buy, err := p.GetAdvertise(c, token, p.TradeTypes[0])
@@ -66,7 +67,6 @@ func (p *Platform) GetAdvertise(c *config.Configuration, token string, tradeType
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
-
 	response, err := p.DoRequest(query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get binance response: %w", err)
@@ -128,6 +128,7 @@ func (p *Platform) ResponseToAdvertise(response *[]byte) (*platform.Advertise, e
 	var data Response
 
 	err := json.Unmarshal(*response, &data)
+	log.Printf("data: %+v", data)
 	if err != nil {
 		return nil, fmt.Errorf("cant' unmarshall data from binance response: %w", err)
 	}

@@ -13,7 +13,7 @@ type EventProcessor struct {
 	tg      *telegram.Client
 	offset  int
 	storage storage.Storage
-	handler handler.PlaftormHandler
+	handler *handler.PlaftormHandler
 }
 
 type Meta struct {
@@ -28,7 +28,7 @@ func New(client *telegram.Client, storage storage.Storage) *EventProcessor {
 	return &EventProcessor{
 		tg:      client,
 		storage: storage,
-		handler: *handler.New(),
+		handler: handler.New(),
 	}
 
 }
