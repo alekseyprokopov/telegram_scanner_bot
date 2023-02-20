@@ -20,7 +20,7 @@ func (p *Platform) GetQuery(c *config.Config, token string, tradeType string) (*
 		"tokenId":    token,
 		"currencyID": "RUB",
 		"payment":    p.GetPayTypes(c),
-		"side":       "1",
+		"side":       tradeType,
 		"size":       "10",
 		"page":       "1",
 		"amount":     c.MinValue,
