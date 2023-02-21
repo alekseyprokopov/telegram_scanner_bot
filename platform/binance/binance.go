@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/adshao/go-binance/v2"
-	"log"
+	"io"
 	"net/http"
 	"scanner_bot/config"
 	"scanner_bot/platform"
@@ -36,7 +36,7 @@ func New(name string, url string, tradeTypes []string, payTypes []string, tokens
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
 	result := platform.ResultPlatformData{}
-	spotData, err := p.GetSpotData()
+	spotData, err := p.getSpotData()
 	if err != nil {
 		return nil, fmt.Errorf("can't get spot data: %w", err)
 	}
@@ -63,26 +63,25 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 func (p *Platform) GetAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 
-	query, err := p.GetQuery(userConfig, token, tradeType)
+	query, err := p.getQuery(userConfig, token, tradeType)
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
-	response, err := p.DoRequest(query)
+	response, err := p.doRequest(query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get binance response: %w", err)
 	}
 
-	advertise, err := p.ResponseToAdvertise(&response)
+	advertise, err := p.responseToAdvertise(&response)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
 
-	log.Printf("advertise: %+v", advertise)
 
 	return advertise, nil
 }
 
-func (p *Platform) GetSpotData() (*map[string]float64, error) {
+func (p *Platform) getSpotData() (*map[string]float64, error) {
 	allTokens := p.AllTokens
 	set := *p.CreatePairsSet(allTokens)
 	result := map[string]float64{}
@@ -102,7 +101,7 @@ func (p *Platform) GetSpotData() (*map[string]float64, error) {
 	return &result, nil
 }
 
-func (p *Platform) GetQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
+func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*bytes.Buffer, error) {
 
 	var BinanceJsonData = map[string]interface{}{
 		"proMerchantAds": false,
@@ -124,15 +123,15 @@ func (p *Platform) GetQuery(c *config.Config, token string, tradeType string) (*
 	return result, nil
 }
 
-func (p *Platform) ResponseToAdvertise(response *[]byte) (*platform.Advertise, error) {
+func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
-
 	err := json.Unmarshal(*response, &data)
-	log.Printf("data: %+v", data)
+
 	if err != nil {
 		return nil, fmt.Errorf("cant' unmarshall data from binance response: %w", err)
 	}
 	item := data.Data[0]
+
 	cost, _ := strconv.ParseFloat(item.Adv.Price, 64)
 	minLimit, _ := strconv.ParseFloat(item.Adv.MinSingleTransAmount, 64)
 	maxLimit, _ := strconv.ParseFloat(item.Adv.MaxSingleTransAmount, 64)
@@ -160,4 +159,23 @@ func payTypesToString(r *Response) string {
 
 	}
 	return strings.Join(result, ", ")
+}
+func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodPost, p.Url, query)
+	if err != nil {
+		return nil, fmt.Errorf("can't do binance request: %w", err)
+	}
+	req.Header.Set("accept", "*/*")
+	req.Header.Set("content-type", "application/json")
+	req.Header.Set("user-agent", `Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36`)
+	resp, err := p.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("can't get response: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("can't read body: %w", err)
+	}
+	return body, nil
 }

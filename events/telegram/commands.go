@@ -101,7 +101,9 @@ func (p *EventProcessor) GetCourses(chatID int) error {
 	if err != nil {
 		return err
 	}
-	result, err := p.handler.Binance.GetResult(conf)
+	//result, err := p.handler.Binance.GetResult(conf)
+
+	result, err := p.handler.Bybit.GetResult(conf)
 	if err != nil {
 		return fmt.Errorf("can't Get advertise: %w", err)
 	}
