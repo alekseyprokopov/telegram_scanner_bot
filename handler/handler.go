@@ -19,7 +19,7 @@ var (
 	//BinanceTradeType = []string{"BUY", "SELL"}
 
 	name     = "bybit"
-	url      = "https://api2.bybit.com/spot/api/otc/item/list"
+	url      = "https://api2.bybit.com/fiat/otc/item/online"
 	payTypes = []string{"185", "75", "64", "62", "274"}
 	tokens   = []string{"USDT", "BTC", "ETH", "USDC"}
 

@@ -41,7 +41,7 @@ const (
 	P2PBinanceURL = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
 
 	ByBitName   = "bybit"
-	P2PByBitURL = "https://api2.bybit.com/spot/api/otc/item/list"
+	P2PByBitURL = "https://api2.bybit.com/fiat/otc/item/online"
 
 	HuobiName   = "huobi"
 	P2PHuobiURL = "https://otc-akm.huobi.com/v1/data/trade-market?"

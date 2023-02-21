@@ -14,7 +14,7 @@ type Response struct {
 			LastQuantity      string `json:"lastQuantity"` //доступно
 			MinAmount         string `json:"minAmount"`    //minLimit
 			MaxAmount         string `json:"maxAmount"`    //maxLimit
-			Payments          []int  `json:"payments"`
+			Payments          []string  `json:"payments"`
 			RecentOrderNum    int    `json:"recentOrderNum"`    // количество сделок
 			RecentExecuteRate int    `json:"recentExecuteRate"` //% выполнения
 		} `json:"items"`

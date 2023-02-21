@@ -38,7 +38,7 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	result := platform.ResultPlatformData{}
 	spotData, err := p.getSpotData()
 	if err != nil {
-		return nil, fmt.Errorf("can't get spot data: %w", err)
+		return nil, fmt.Errorf("can't get binance spot data: %w", err)
 	}
 
 	result.Name = p.Name
@@ -46,8 +46,8 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	result.Tokens = map[string]platform.TokenInfo{}
 
 	for _, token := range p.Tokens {
-		buy, err := p.GetAdvertise(c, token, p.TradeTypes[0])
-		sell, err := p.GetAdvertise(c, token, p.TradeTypes[1])
+		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
+		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
 		if err != nil {
 			return nil, fmt.Errorf("can't get advertise: %w", err)
 		}
@@ -60,7 +60,7 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	return &result, nil
 }
 
-func (p *Platform) GetAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
+func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 
 	query, err := p.getQuery(userConfig, token, tradeType)
