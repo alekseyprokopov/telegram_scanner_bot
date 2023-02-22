@@ -2,7 +2,7 @@ package handler
 
 import (
 	"scanner_bot/platform"
-	"scanner_bot/platform/bybit"
+	"scanner_bot/platform/huobi"
 )
 
 type PlaftormHandler struct {
@@ -18,14 +18,23 @@ var (
 	//tokens           = []string{"USDT", "BTC", "BUSD", "BNB", "ETH", "SHIB"}
 	//BinanceTradeType = []string{"BUY", "SELL"}
 
-	name     = "bybit"
-	url      = "https://api2.bybit.com/fiat/otc/item/online"
+	name     = "huobi"
+	url      = "https://otc-akm.huobi.com/v1/data/trade-market"
 	payTypes = []string{"185", "75", "64", "62", "274"}
-	tokens   = []string{"USDT", "BTC", "ETH", "USDC"}
+	tokens   = []string{
+		"2",  /*USDT*/
+		"1",  /*BTC*/
+		"62", /*USDD*/
+		"4",  /*HT*/
+		"22", /*TRX*/
+		"3",  /*ETH*/
+		"7",  /*XRP*/
+		"8",  /*LTC*/
+	}
 
-	BybitTradeType = []string{"1", "0"} //side 1- купить. 0 - продать
+	BybitTradeType = []string{"sell", "buy"} //side 1- купить. 0 - продать
 )
 
 func New() *PlaftormHandler {
-	return &PlaftormHandler{Bybit: bybit.New(name, url, BybitTradeType, payTypes, tokens, tokens)}
+	return &PlaftormHandler{Huobi: huobi.New(name, url, BybitTradeType, payTypes, tokens, tokens)}
 }

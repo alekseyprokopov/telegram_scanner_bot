@@ -34,7 +34,7 @@ type PayMethod struct {
 	Name        string `json:"name"`
 }
 
-func huobiPaymetodsToString(data []PayMethod) string {
+func paymetodsToString(data []PayMethod) string {
 	var result []string
 	for _, item := range data {
 		result = append(result, item.Name)
