@@ -127,7 +127,7 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		SellerName:   item.UserName,
 		Asset:        string(item.CoinID),
 		Fiat:         string(item.Currency),
-		BankName:     paymetodsToString(item.PayMethods),
+		BankName:     payMethodsToString(item.PayMethods),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
@@ -136,3 +136,4 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		Available:    available,
 	}, nil
 }
+

@@ -1,6 +1,10 @@
 package huobi
 
-import "strings"
+import (
+	"scanner_bot/platform"
+	"strconv"
+	"strings"
+)
 
 type Response struct {
 	Code       int    `json:"code"`
@@ -34,12 +38,16 @@ type PayMethod struct {
 	Name        string `json:"name"`
 }
 
-func paymetodsToString(data []PayMethod) string {
+func payMethodsToString(data []PayMethod) string {
+	dict := platform.PayTypesDict[platform.HuobiName]
 	var result []string
 	for _, item := range data {
-		result = append(result, item.Name)
+		id :=strconv.Itoa(item.PayMethodID)
+		item, ok := dict[id]
+		if ok {
+			result = append(result, item)
+		}
 	}
-
 	return strings.Join(result, ", ")
 }
 

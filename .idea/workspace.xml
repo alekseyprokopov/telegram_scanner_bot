@@ -6,12 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="81dd0e54-a279-4d6e-97a3-bd6ffb0ed11d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/binance/resonse.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/response.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/huobi/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/huobi.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/huobi/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/response.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/platformData.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/platformData.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner_bot" beforeDir="false" afterPath="$PROJECT_DIR$/scanner_bot" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
