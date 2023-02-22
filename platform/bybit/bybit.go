@@ -16,6 +16,7 @@ import (
 
 type Platform struct {
 	*platform.PlatformTemplate
+	Bybit *bybit.Client
 }
 
 func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
@@ -29,7 +30,7 @@ func New(name string, url string, tradeTypes []string, payTypes []string, tokens
 			AllTokens:  allTokens,
 			Client:     http.Client{},
 		},
-		//Binance: binance.NewClient("", ""),
+		Bybit: bybit.NewClient().WithAuth("", ""),
 	}
 }
 
@@ -67,9 +68,9 @@ func (p *Platform) getSpotData() (*map[string]float64, error) {
 	set := *p.CreatePairsSet(allTokens)
 	result := map[string]float64{}
 
-	client := bybit.NewClient().WithAuth("", "")
+
 	sym := bybit.SymbolFuture("")
-	response, _ := client.Future().InverseFuture().Tickers(sym)
+	response, _ := p.Bybit.Future().InverseFuture().Tickers(sym)
 	for _, item := range response.Result {
 		_, ok := set[string(item.Symbol)]
 		if ok {
