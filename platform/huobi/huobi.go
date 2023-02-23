@@ -34,13 +34,44 @@ func New(name string, url string, tradeTypes []string, payTypes []string, tokens
 }
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
-	res, err := p.getAdvertise(c, p.Tokens[0], p.TradeTypes[0])
-	if err != nil {
-		return nil, err
-	}
+	result := platform.ResultPlatformData{}
+	//spotData, err := p.getSpotData()
+	//if err != nil {
+	//	return nil, fmt.Errorf("can't get huobi spot data: %w", err)
+	//}
 
-	log.Printf("%+v", res)
-	return nil, nil
+	result.Name = p.Name
+	//result.Spot = *spotData
+	result.Tokens = map[string]platform.TokenInfo{}
+
+	for _, token := range p.Tokens {
+
+
+		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
+		if err != nil {
+			log.Printf("can't get buy advertise for huobi, tokel (%s): %v", token, err)
+
+		} else {
+			result.Tokens[token].Buy = platform.Advertise{
+
+			}
+		}
+		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
+		log.Println("token: ", token)
+		log.Printf("buy: %+v \n", buy)
+		log.Printf("sell: %+v \n", sell)
+
+		if err != nil {
+			log.Printf("can't get advertise: %v", err)
+		} else {
+			result.Tokens[token] = platform.TokenInfo{
+				Buy:  *buy,
+				Sell: *sell,
+			}
+		}
+
+	}
+	return &result, nil
 }
 func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
@@ -113,7 +144,7 @@ func (p *Platform) doRequest(query string) ([]byte, error) {
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 	err := json.Unmarshal(*response, &data)
-	if err != nil {
+	if err != nil || len(data.Data) == 0 || data.Code != 200 {
 		return nil, fmt.Errorf("cant' unmarshall data from binance response: %w", err)
 	}
 	item := data.Data[0]
@@ -136,4 +167,3 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		Available:    available,
 	}, nil
 }
-

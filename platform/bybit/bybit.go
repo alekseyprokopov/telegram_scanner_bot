@@ -48,7 +48,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		return nil, fmt.Errorf("cant get advertise: %w", err)
 	}
 	for _, token := range p.Tokens {
-		log.Print(token, p.TradeTypes[0], p.TradeTypes[1])
 		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
 		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
 		if err != nil {
