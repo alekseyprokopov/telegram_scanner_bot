@@ -39,51 +39,38 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	//if err != nil {
 	//	return nil, fmt.Errorf("can't get huobi spot data: %w", err)
 	//}
-
 	result.Name = p.Name
 	//result.Spot = *spotData
 	result.Tokens = map[string]platform.TokenInfo{}
 
 	for _, token := range p.Tokens {
-
-
+		tokenResult := platform.TokenInfo{}
 		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-		if err != nil {
-			log.Printf("can't get buy advertise for huobi, tokel (%s): %v", token, err)
-
+		if err != nil || buy == nil {
+			log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
 		} else {
-			result.Tokens[token].Buy = platform.Advertise{
-
-			}
+			tokenResult.Buy = *buy
 		}
 		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-		log.Println("token: ", token)
-		log.Printf("buy: %+v \n", buy)
-		log.Printf("sell: %+v \n", sell)
 
-		if err != nil {
-			log.Printf("can't get advertise: %v", err)
+		if err != nil || sell == nil {
+			log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
 		} else {
-			result.Tokens[token] = platform.TokenInfo{
-				Buy:  *buy,
-				Sell: *sell,
-			}
+			tokenResult.Sell = *sell
 		}
-
+		result.Tokens[token] = tokenResult
 	}
 	return &result, nil
 }
 func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
-
 	query := p.getQuery(userConfig, token, tradeType)
-	log.Println("query: ", query)
 	response, err := p.doRequest(query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
 
-	advertise, err := p.responseToAdvertise(&response)
+	advertise, err := p.responseToAdvertise(response)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
@@ -114,15 +101,12 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) st
 	return u.Encode()
 }
 
-func (p *Platform) doRequest(query string) ([]byte, error) {
+func (p *Platform) doRequest(query string) (*[]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, p.Url, nil)
-	log.Println("URL: ", p.Url)
 	req.URL.RawQuery = query
-
 	if err != nil {
 		return nil, fmt.Errorf("can't do huobi request: %w", err)
 	}
-
 	req.Header.Set("accept", "*/*")
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("user-agent", `Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36`)
@@ -136,9 +120,7 @@ func (p *Platform) doRequest(query string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("can't read body: %w", err)
 	}
-
-	log.Printf("response body: %+v", string(body))
-	return body, nil
+	return &body, nil
 }
 
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
@@ -156,8 +138,8 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 	return &platform.Advertise{
 		PlatformName: p.Name,
 		SellerName:   item.UserName,
-		Asset:        string(item.CoinID),
-		Fiat:         string(item.Currency),
+		Asset:        huobiTokensFromDict(item.CoinID),
+		Fiat:         strconv.Itoa(item.Currency) + " (RUB)",
 		BankName:     payMethodsToString(item.PayMethods),
 		Cost:         cost,
 		MinLimit:     minLimit,

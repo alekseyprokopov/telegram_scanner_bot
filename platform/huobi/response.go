@@ -42,7 +42,7 @@ func payMethodsToString(data []PayMethod) string {
 	dict := platform.PayTypesDict[platform.HuobiName]
 	var result []string
 	for _, item := range data {
-		id :=strconv.Itoa(item.PayMethodID)
+		id := strconv.Itoa(item.PayMethodID)
 		item, ok := dict[id]
 		if ok {
 			result = append(result, item)
@@ -56,4 +56,19 @@ func huobiTradeType(i int) string {
 		return "BUY"
 	}
 	return "SELL"
+}
+
+func huobiTokensFromDict(i int) string {
+	return HuobiTokensDict[strconv.Itoa(i)]
+}
+
+var HuobiTokensDict = map[string]string{
+	"2":  "USDT",
+	"1":  "BTC",
+	"62": "USDD",
+	"4":  "HT",
+	"22": "TRX",
+	"3":  "ETH",
+	"7":  "XRP",
+	"8":  "LTC",
 }
