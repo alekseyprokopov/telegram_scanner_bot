@@ -107,7 +107,6 @@ func (p *EventProcessor) GetCourses(chatID int) error {
 	if err != nil {
 		return fmt.Errorf("can't Get advertise: %w", err)
 	}
-	log.Println("RESULT: ", *result)
 	res := fmt.Sprintf("%+v", *result)
 	p.tg.SendMessage(chatID, res)
 

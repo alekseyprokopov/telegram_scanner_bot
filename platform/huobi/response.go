@@ -33,6 +33,25 @@ type Response struct {
 	Success bool `json:"success"`
 }
 
+type SpotResponse struct {
+	Status string `json:"status"`
+	Ts     int64  `json:"ts"`
+	Data   []struct {
+		Symbol  string  `json:"symbol"`
+		Open    float64 `json:"open"`
+		High    float64 `json:"high"`
+		Low     float64 `json:"low"`
+		Close   float64 `json:"close"`
+		Amount  float64 `json:"amount"`
+		Vol     float64 `json:"vol"`
+		Count   int     `json:"count"`
+		Bid     float64 `json:"bid"`
+		BidSize float64 `json:"bidSize"`
+		Ask     float64 `json:"ask"`
+		AskSize float64 `json:"askSize"`
+	} `json:"data"`
+}
+
 type PayMethod struct {
 	PayMethodID int    `json:"payMethodId"`
 	Name        string `json:"name"`

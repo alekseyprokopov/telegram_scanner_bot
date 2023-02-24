@@ -15,7 +15,6 @@ import (
 
 type Platform struct {
 	*platform.PlatformTemplate
-	//Huobi
 }
 
 func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
@@ -29,18 +28,20 @@ func New(name string, url string, tradeTypes []string, payTypes []string, tokens
 			AllTokens:  allTokens,
 			Client:     http.Client{},
 		},
-		//Huobi: bybit.NewClient().WithAuth("", ""),
 	}
 }
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
 	result := platform.ResultPlatformData{}
-	//spotData, err := p.getSpotData()
-	//if err != nil {
-	//	return nil, fmt.Errorf("can't get huobi spot data: %w", err)
-	//}
+	spotData, err := p.getSpotData()
+	if err != nil {
+		return nil, fmt.Errorf("can't get huobi spot data: %w", err)
+	}
 	result.Name = p.Name
-	//result.Spot = *spotData
+	result.Spot = *spotData
+
+	log.Println("SPOT: ", result.Spot)
+
 	result.Tokens = map[string]platform.TokenInfo{}
 
 	for _, token := range p.Tokens {
@@ -62,6 +63,48 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	}
 	return &result, nil
 }
+func (p *Platform) getSpotData() (*map[string]float64, error) {
+	//create Req
+	url := "https://api.huobi.pro/market/tickers"
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("can't get request to spot (huobi): %w", err)
+	}
+	//Do req (need to fix and create common DoGetRequestFunc)
+	resp, err := p.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("can't get resposnse from spot (huobi): %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("can't read info from response: %w", err)
+	}
+	var spotResponse SpotResponse
+	if err := json.Unmarshal(body, &spotResponse); err != nil {
+		return nil, fmt.Errorf("can't unmarshall: %w", err)
+	}
+	//find pairs and create result
+	result := map[string]float64{}
+	allTokens := p.AllTokens
+	set := *p.CreatePairsSet(allTokens)
+
+	log.Println("SPOT RESPONSE: ", spotResponse)
+	log.Println("All tokens: ", allTokens)
+	log.Println("Set: ", set)
+
+
+	for _, item := range spotResponse.Data {
+		_, ok := set[strings.ToUpper(item.Symbol)]
+		if ok {
+			result[strings.ToUpper(item.Symbol)] = item.Close
+		}
+	}
+	return &result, err
+
+}
+
 func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 	query := p.getQuery(userConfig, token, tradeType)

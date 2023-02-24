@@ -31,10 +31,11 @@ var (
 		"7",  /*XRP*/
 		"8",  /*LTC*/
 	}
+	allTokens = []string{"USDT", "BTC", "USDD", "HT", "TRX", "ETH", "XRP", "LTC"}
 
 	BybitTradeType = []string{"sell", "buy"} //side 1- купить. 0 - продать
 )
 
 func New() *PlaftormHandler {
-	return &PlaftormHandler{Huobi: huobi.New(name, url, BybitTradeType, payTypes, tokens, tokens)}
+	return &PlaftormHandler{Huobi: huobi.New(name, url, BybitTradeType, payTypes, tokens, allTokens)}
 }

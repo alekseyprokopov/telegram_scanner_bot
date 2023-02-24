@@ -26,7 +26,7 @@ type PlatformTemplate struct {
 	PayTypes   []string `json:"pay_types"`
 	TradeTypes []string `json:"trade_types"`
 	Tokens     []string `json:"platform_tokens"`
-	AllTokens  []string `json:"all_tokents"`
+	AllTokens  []string `json:"all_tokens"`
 	Client     http.Client
 }
 
