@@ -1,10 +1,6 @@
 package huobi
 
-import (
-	"scanner_bot/platform"
-	"strconv"
-	"strings"
-)
+import "strconv"
 
 type Response struct {
 	Code       int    `json:"code"`
@@ -57,17 +53,12 @@ type PayMethod struct {
 	Name        string `json:"name"`
 }
 
-func payMethodsToString(data []PayMethod) string {
-	dict := platform.PayTypesDict[platform.HuobiName]
+func getStringSlice(data []PayMethod) []string {
 	var result []string
 	for _, item := range data {
-		id := strconv.Itoa(item.PayMethodID)
-		item, ok := dict[id]
-		if ok {
-			result = append(result, item)
-		}
+		result = append(result, strconv.Itoa(item.PayMethodID))
 	}
-	return strings.Join(result, ", ")
+	return result
 }
 
 func huobiTradeType(i int) string {
@@ -75,19 +66,4 @@ func huobiTradeType(i int) string {
 		return "BUY"
 	}
 	return "SELL"
-}
-
-func huobiTokensFromDict(i int) string {
-	return HuobiTokensDict[strconv.Itoa(i)]
-}
-
-var HuobiTokensDict = map[string]string{
-	"2":  "USDT",
-	"1":  "BTC",
-	"62": "USDD",
-	"4":  "HT",
-	"22": "TRX",
-	"3":  "ETH",
-	"7":  "XRP",
-	"8":  "LTC",
 }

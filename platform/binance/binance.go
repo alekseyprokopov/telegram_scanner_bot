@@ -19,17 +19,9 @@ type Platform struct {
 	Binance *binance.Client
 }
 
-func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
+func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: &platform.PlatformTemplate{
-			Name:       name,
-			Url:        url,
-			TradeTypes: tradeTypes,
-			PayTypes:   payTypes,
-			Tokens:     tokens,
-			AllTokens:  allTokens,
-			Client:     http.Client{},
-		},
+		PlatformTemplate: platform.New(name,url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
 		Binance: binance.NewClient("", ""),
 	}
 }
@@ -77,13 +69,11 @@ func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
 
-
 	return advertise, nil
 }
 
 func (p *Platform) getSpotData() (*map[string]float64, error) {
-	allTokens := p.AllTokens
-	set := *p.CreatePairsSet(allTokens)
+	set := p.AllPairs
 	result := map[string]float64{}
 
 	prices, err := p.Binance.NewListPricesService().Do(context.Background())

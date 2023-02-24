@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"github.com/hirokisan/bybit/v2"
 	"io"
-	"log"
 	"net/http"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"strconv"
-	"strings"
 )
 
 type Platform struct {
@@ -19,18 +17,10 @@ type Platform struct {
 	Bybit *bybit.Client
 }
 
-func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
+func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: &platform.PlatformTemplate{
-			Name:       name,
-			Url:        url,
-			TradeTypes: tradeTypes,
-			Tokens:     tokens,
-			PayTypes:   payTypes,
-			AllTokens:  allTokens,
-			Client:     http.Client{},
-		},
-		Bybit: bybit.NewClient().WithAuth("", ""),
+		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
+		Bybit:            bybit.NewClient().WithAuth("", ""),
 	}
 }
 
@@ -63,10 +53,9 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 }
 
 func (p *Platform) getSpotData() (*map[string]float64, error) {
-	allTokens := p.AllTokens
-	set := *p.CreatePairsSet(allTokens)
-	result := map[string]float64{}
 
+	set := p.AllPairs
+	result := map[string]float64{}
 
 	sym := bybit.SymbolFuture("")
 	response, _ := p.Bybit.Future().InverseFuture().Tickers(sym)
@@ -83,7 +72,6 @@ func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType
 	userConfig := &c.UserConfig
 
 	query, err := p.getQuery(userConfig, token, tradeType)
-	log.Println("query: ", query)
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
@@ -142,7 +130,6 @@ func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 	err := json.Unmarshal(*response, &data)
-	log.Printf("data: %+v", data)
 	if err != nil {
 		return nil, fmt.Errorf("cant' unmarshall data from bybit response: %w", err)
 	}
@@ -157,7 +144,7 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		SellerName:   item.NickName,
 		Asset:        item.TokenName,
 		Fiat:         item.CurrencyID,
-		BankName:     PayTypesToString(item.Payments),
+		BankName:     p.PayTypesToString(item.Payments),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
@@ -175,16 +162,3 @@ func bybitTradeType(i int) string {
 }
 
 // сделать функцию универсальной!!!
-func PayTypesToString(item []string) string {
-	dict := platform.PayTypesDict[platform.ByBitName]
-	var result []string
-
-	for _, value := range item {
-		item, ok := dict[value]
-		if ok {
-			result = append(result, item)
-
-		}
-	}
-	return strings.Join(result, ", ")
-}

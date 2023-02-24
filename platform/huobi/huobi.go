@@ -17,17 +17,9 @@ type Platform struct {
 	*platform.PlatformTemplate
 }
 
-func New(name string, url string, tradeTypes []string, payTypes []string, tokens []string, allTokens []string) *Platform {
+func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: &platform.PlatformTemplate{
-			Name:       name,
-			Url:        url,
-			TradeTypes: tradeTypes,
-			Tokens:     tokens,
-			PayTypes:   payTypes,
-			AllTokens:  allTokens,
-			Client:     http.Client{},
-		},
+		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
 	}
 }
 
@@ -39,9 +31,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	}
 	result.Name = p.Name
 	result.Spot = *spotData
-
-	log.Println("SPOT: ", result.Spot)
-
 	result.Tokens = map[string]platform.TokenInfo{}
 
 	for _, token := range p.Tokens {
@@ -85,15 +74,9 @@ func (p *Platform) getSpotData() (*map[string]float64, error) {
 	if err := json.Unmarshal(body, &spotResponse); err != nil {
 		return nil, fmt.Errorf("can't unmarshall: %w", err)
 	}
-	//find pairs and create result
+
 	result := map[string]float64{}
-	allTokens := p.AllTokens
-	set := *p.CreatePairsSet(allTokens)
-
-	log.Println("SPOT RESPONSE: ", spotResponse)
-	log.Println("All tokens: ", allTokens)
-	log.Println("Set: ", set)
-
+	set := p.AllPairs
 
 	for _, item := range spotResponse.Data {
 		_, ok := set[strings.ToUpper(item.Symbol)]
@@ -178,12 +161,14 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 	minLimit, _ := strconv.ParseFloat(item.MinTradeLimit, 64)
 	maxLimit, _ := strconv.ParseFloat(item.MaxTradeLimit, 64)
 	available, _ := strconv.ParseFloat(item.TradeCount, 64)
+	pays := getStringSlice(item.PayMethods)
+
 	return &platform.Advertise{
 		PlatformName: p.Name,
 		SellerName:   item.UserName,
-		Asset:        huobiTokensFromDict(item.CoinID),
+		Asset:        p.TokenFromDict(strconv.Itoa(item.CoinID)),
 		Fiat:         strconv.Itoa(item.Currency) + " (RUB)",
-		BankName:     payMethodsToString(item.PayMethods),
+		BankName:     p.PayTypesToString(pays),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,

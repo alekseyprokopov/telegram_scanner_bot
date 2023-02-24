@@ -19,6 +19,4 @@ type Response struct {
 			RecentExecuteRate int    `json:"recentExecuteRate"` //% выполнения
 		} `json:"items"`
 	} `json:"result"`
-	Token   interface{} `json:"token"`
-	ExtInfo interface{} `json:"ext_info"`
 }
