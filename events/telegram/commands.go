@@ -103,12 +103,13 @@ func (p *EventProcessor) GetCourses(chatID int) error {
 	}
 	//result, err := p.handler.Binance.GetResult(conf)
 
-	result, err := p.handler.Binance.GetResult(conf)
+	//result, err := p.handler.Binance.GetResult(conf)
+	p.handler.InsideTakerTaker(conf)
 	if err != nil {
 		return fmt.Errorf("can't Get advertise: %w", err)
 	}
-	res := fmt.Sprintf("%+v", *result)
-	p.tg.SendMessage(chatID, res)
+	//res := fmt.Sprintf("%+v", *result)
+	//p.tg.SendMessage(chatID, res)
 
 	return nil
 }
