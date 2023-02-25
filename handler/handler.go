@@ -37,21 +37,22 @@ func (p *PlaftormHandler) InsideTakerTaker(c *config.Configuration) {
 			pair2, ok2 := data.Spot[token1+token2]
 
 			if ok1 {
-				result := tokenInfo1.Buy.Cost * pair1 / data.Tokens[token1].Sell.Cost
-				log.Println("ПАРА: ", token1+token2)
-				log.Println("ПОКУПКА: ", data.Tokens[token1].Buy.Cost)
-				log.Println("СПОТ: ", pair1)
-				log.Println("ПОДАЖА: ", data.Tokens[token1].Sell.Cost)
+				result := 1 / tokenInfo1.Buy.Cost * pair1 / tokenInfo2.Sell.Cost
+				log.Println("\nПАРА: ", token1+token2)
+				log.Printf("ПОКУПКА %s: %f \n", token1, tokenInfo1.Buy.Cost)
+				log.Printf("СПОТ: %f \n", pair1)
+				log.Printf("ПОДАЖА %s: %f\n", token2, tokenInfo2.Sell.Cost)
 				log.Println("ПРОФИТ: ", result)
+				log.Println("-------------")
 
 			}
 
-			if ok2{
-				result := tokenInfo2.Buy.Cost * pair2 / data.Tokens[token1].Sell.Cost
-				log.Println("ПАРА: ", token1+token2)
-				log.Println("ПОКУПКА: ", data.Tokens[token1].Buy.Cost)
+			if ok2 {
+				result := 1 / tokenInfo1.Buy.Cost * pair1 / tokenInfo2.Sell.Cost
+				log.Println("ПАРА: ", token2+token1)
+				log.Printf("\nПОКУПКА %s: %f \n", token1, tokenInfo1.Buy.Cost)
 				log.Println("СПОТ: ", pair2)
-				log.Println("ПОДАЖА: ", data.Tokens[token1].Sell.Cost)
+				log.Printf("\nПОДАЖА %s: %f\n", tokenInfo2.Sell.Cost)
 				log.Println("ПРОФИТ: ", result)
 			}
 		}
