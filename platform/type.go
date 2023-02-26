@@ -102,7 +102,7 @@ type Advertise struct {
 type ResultPlatformData struct {
 	Name   string
 	Spot   map[string]float64
-	Tokens map[string]TokenInfo
+	Tokens map[string]*TokenInfo
 }
 
 type TokenInfo struct {

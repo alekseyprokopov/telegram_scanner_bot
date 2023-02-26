@@ -24,33 +24,33 @@ func New(name string, url string, tradeTypes []string, tokens []string, tokensDi
 	}
 }
 
-func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
-	result := platform.ResultPlatformData{}
-	spotData, err := p.getSpotData()
-	if err != nil {
-		return nil, fmt.Errorf("can't get bybit spot data: %w", err)
-	}
-
-	result.Name = p.Name
-	result.Spot = *spotData
-	result.Tokens = map[string]platform.TokenInfo{}
-	if err != nil {
-		return nil, fmt.Errorf("cant get advertise: %w", err)
-	}
-	for _, token := range p.Tokens {
-		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-		if err != nil {
-			return nil, fmt.Errorf("can't get advertise: %w", err)
-		}
-		result.Tokens[token] = platform.TokenInfo{
-			Buy:  *buy,
-			Sell: *sell,
-		}
-	}
-	return &result, nil
-
-}
+//func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
+//	result := platform.ResultPlatformData{}
+//	spotData, err := p.getSpotData()
+//	if err != nil {
+//		return nil, fmt.Errorf("can't get bybit spot data: %w", err)
+//	}
+//
+//	result.Name = p.Name
+//	result.Spot = *spotData
+//	result.Tokens = map[string]platform.TokenInfo{}
+//	if err != nil {
+//		return nil, fmt.Errorf("cant get advertise: %w", err)
+//	}
+//	for _, token := range p.Tokens {
+//		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
+//		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
+//		if err != nil {
+//			return nil, fmt.Errorf("can't get advertise: %w", err)
+//		}
+//		result.Tokens[token] = platform.TokenInfo{
+//			Buy:  *buy,
+//			Sell: *sell,
+//		}
+//	}
+//	return &result, nil
+//
+//}
 
 func (p *Platform) getSpotData() (*map[string]float64, error) {
 
