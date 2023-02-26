@@ -5,6 +5,8 @@ import (
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"scanner_bot/platform/binance"
+	"scanner_bot/platform/bybit"
+	"scanner_bot/platform/huobi"
 	"time"
 )
 
@@ -17,15 +19,15 @@ type PlaftormHandler struct {
 func New() *PlaftormHandler {
 	return &PlaftormHandler{
 		Binance: binance.New(Binance.name, Binance.p2pURL, Binance.tradeTypes, Binance.tokens, Binance.tokensDict, Binance.payTypesDict, allPairs),
-		//Bybit:   bybit.New(Bybit.name, Bybit.p2pURL, Bybit.tradeTypes, Bybit.tokens, Bybit.tokensDict, Bybit.payTypesDict, allPairs),
-		//Huobi:   huobi.New(Huobi.name, Huobi.p2pURL, Huobi.tradeTypes, Huobi.tokens, Huobi.tokensDict, Huobi.payTypesDict, allPairs)}
-	}
+		Bybit:   bybit.New(Bybit.name, Bybit.p2pURL, Bybit.tradeTypes, Bybit.tokens, Bybit.tokensDict, Bybit.payTypesDict, allPairs),
+		Huobi:   huobi.New(Huobi.name, Huobi.p2pURL, Huobi.tradeTypes, Huobi.tokens, Huobi.tokensDict, Huobi.payTypesDict, allPairs)}
+
 }
 
 func (p *PlaftormHandler) InsideTakerTaker(c *config.Configuration) {
-	start:= time.Now()
-	data, err := p.Binance.GetResult(c)
-	//log.Printf("DATA: %+v ", data)
+	start := time.Now()
+	data, err := p.Huobi.GetResult(c)
+	log.Printf("DATA: %+v ", data)
 	//log.Printf("BUY: %+v ", data.Tokens["USDT"].Buy)
 	log.Println("TIME : ", time.Since(start))
 
@@ -43,7 +45,7 @@ func (p *PlaftormHandler) InsideTakerTaker(c *config.Configuration) {
 			if ok1 {
 				log.Println("-------------")
 				log.Println("pair1")
-				result := 1/tokenInfo1.Buy.Cost * pair1 * tokenInfo2.Sell.Cost
+				result := 1 / tokenInfo1.Buy.Cost * pair1 * tokenInfo2.Sell.Cost
 				log.Println("ПАРА: ", token1+token2)
 				log.Printf("ПОКУПКА %s: %f \n", token1, tokenInfo1.Buy.Cost)
 				log.Printf("СПОТ: %f \n", pair1)
@@ -57,7 +59,7 @@ func (p *PlaftormHandler) InsideTakerTaker(c *config.Configuration) {
 				log.Println("-------------")
 
 				log.Println("pair2")
-				result := 1/tokenInfo1.Buy.Cost / pair2 * tokenInfo2.Sell.Cost
+				result := 1 / tokenInfo1.Buy.Cost / pair2 * tokenInfo2.Sell.Cost
 				log.Println("ПАРА: ", token2+token1)
 				log.Printf("ПОКУПКА %s: %f \n", token1, tokenInfo1.Buy.Cost)
 				log.Println("СПОТ: ", pair2)

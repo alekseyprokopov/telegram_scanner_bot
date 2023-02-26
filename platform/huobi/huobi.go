@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Platform struct {
@@ -22,35 +24,59 @@ func New(name string, url string, tradeTypes []string, tokens []string, tokensDi
 	}
 }
 
-//func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
-//	result := platform.ResultPlatformData{}
-//	spotData, err := p.getSpotData()
-//	if err != nil {
-//		return nil, fmt.Errorf("can't get huobi spot data: %w", err)
-//	}
-//	result.Name = p.Name
-//	result.Spot = *spotData
-//	result.Tokens = map[string]platform.TokenInfo{}
-//
-//	for _, token := range p.Tokens {
-//		tokenResult := platform.TokenInfo{}
-//		buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-//		if err != nil || buy == nil {
-//			log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
-//		} else {
-//			tokenResult.Buy = *buy
-//		}
-//		sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-//
-//		if err != nil || sell == nil {
-//			log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
-//		} else {
-//			tokenResult.Sell = *sell
-//		}
-//		result.Tokens[token] = tokenResult
-//	}
-//	return &result, nil
-//}
+func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
+	result := platform.ResultPlatformData{}
+	wg := sync.WaitGroup{}
+	result.Name = p.Name
+
+	wg.Add(1)
+	go func() {
+		spotData, err := p.getSpotData()
+		if err != nil {
+			log.Printf("can't get spot data: %v", err)
+		}
+		result.Spot = *spotData
+		defer wg.Done()
+	}()
+
+
+	result.Tokens = map[string]*platform.TokenInfo{}
+
+	for _, token := range p.Tokens {
+		token:=token
+		cryptoToken := p.TokensDict[token]
+		tokenInfo := &platform.TokenInfo{}
+		result.Tokens[cryptoToken] = tokenInfo
+
+		wg.Add(1)
+		go func() {
+			buy, err := p.getAdvertise(c, token, p.TradeTypes[1])
+			if err != nil || buy == nil {
+				log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
+			} else {
+				tokenInfo.Buy = *buy
+			}
+			defer wg.Done()
+		}()
+
+
+		wg.Add(1)
+		go func() {
+			sell, err := p.getAdvertise(c, token, p.TradeTypes[0])
+			if err != nil || sell == nil {
+				log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
+			} else {
+				tokenInfo.Sell = *sell
+			}
+			defer wg.Done()
+		}()
+		//result.Tokens[token] = tokenInfo
+
+	}
+	wg.Wait()
+
+	return &result, nil
+}
 func (p *Platform) getSpotData() (*map[string]float64, error) {
 	//create Req
 	url := "https://api.huobi.pro/market/tickers"

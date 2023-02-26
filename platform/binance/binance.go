@@ -61,8 +61,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 				tokenInfo.Buy = *buy
 			}
 			defer wg.Done()
-
-
 		}()
 
 
