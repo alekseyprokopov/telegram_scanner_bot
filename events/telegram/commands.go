@@ -34,7 +34,7 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 		return p.SaveConfig(chatID)
 
 	case GetCoursesCmd:
-		return p.GetCourses(chatID)
+		return p.InsideTakerTaker(chatID)
 
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
@@ -96,20 +96,23 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 
 }
 
-func (p *EventProcessor) GetCourses(chatID int) error {
+func (p *EventProcessor) InsideTakerTaker(chatID int) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
 	}
-	//result, err := p.handler.Binance.GetResult(conf)
+	data := p.handler.InsideTakerTaker(conf)
 
-	//result, err := p.handler.Binance.GetResult(conf)
-	p.handler.InsideTakerTaker(conf)
-	if err != nil {
-		return fmt.Errorf("can't Get advertise: %w", err)
+	if len(*data) == 0 {
+		p.tg.SendMessage(chatID, "Связки не найдены...")
+		return nil
 	}
-	//res := fmt.Sprintf("%+v", *result)
-	//p.tg.SendMessage(chatID, res)
+
+	for _, item := range *data {
+		chainMessage := msgChain(&item)
+		p.tg.SendMessage(chatID, chainMessage)
+
+	}
 
 	return nil
 }

@@ -54,7 +54,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		wg.Add(1)
 		go func() {
 			buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-			log.Println(token, buy.Cost)
 			if err != nil || buy == nil {
 				log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
 			} else {
@@ -67,7 +66,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		wg.Add(1)
 		go func() {
 			sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-			log.Println(token, sell.Cost)
 			if err != nil || sell == nil {
 				log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
 			} else {
@@ -75,7 +73,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 			}
 			defer wg.Done()
 		}()
-		//result.Tokens[token] = tokenInfo
 
 	}
 	wg.Wait()
@@ -106,7 +103,6 @@ func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType
 func (p *Platform) getSpotData() (*map[string]float64, error) {
 	set := p.AllPairs
 	result := map[string]float64{}
-	go p.test()
 	prices, err := p.Binance.NewListPricesService().Do(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("can't get spot data: %w", err)
@@ -201,6 +197,4 @@ func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
 	return body, nil
 }
 
-func (p *Platform) test()  {
-	fmt.Println("GO ROUTINE")
-}
+

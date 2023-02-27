@@ -35,7 +35,7 @@ var Huobi = PlatformInfo{
 		"7",  /*XRP*/
 		"8",  /*LTC*/
 	},
-	tradeTypes: []string{"BUY", "SELL"},
+	tradeTypes: []string{"SELL", "BUY"},
 	tokensDict: map[string]string{
 		"2":  "USDT",
 		"1":  "BTC",

@@ -52,7 +52,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		wg.Add(1)
 		go func() {
 			buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-			log.Println(token, buy.Cost)
 			if err != nil || buy == nil {
 				log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
 			} else {
@@ -65,7 +64,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		wg.Add(1)
 		go func() {
 			sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-			log.Println(token, sell.Cost)
 			if err != nil || sell == nil {
 				log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
 			} else {

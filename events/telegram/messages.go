@@ -3,7 +3,7 @@ package telegram
 import (
 	"fmt"
 	"scanner_bot/config"
-	"scanner_bot/platform"
+	"scanner_bot/handler"
 	"strings"
 )
 
@@ -48,26 +48,38 @@ func payTypesToString(c *config.Configuration) string {
 	return strings.Join(result, ", ")
 }
 
-func msgAdvertise(a *platform.Advertise) string {
-	platformInfo := fmt.Sprintf("*%s:*\n", a.PlatformName)
-	typeInfo := fmt.Sprintf("*Тип сделки:* %s\n", a.TradeType)
-	bankInfo := fmt.Sprintf("*Банк:* %s\n", a.BankName)
-	priceInfo := fmt.Sprintf("*Цена:* %.2f\n", a.Cost)
-	sellerInfo := fmt.Sprintf("*Продавец:* %s\n", a.SellerName)
-	limitsInfo := fmt.Sprintf("*Лимиты (%s):* %.1f - %.1f\n", a.Fiat, a.MinLimit, a.MaxLimit)
-	amountInfo := fmt.Sprintf("*Доступно (%s):* %.2f\n", a.Asset, a.Available)
-	dealsInfo := fmt.Sprintf("*Сделки:* %d\n", a.SellerDeals)
+func msgChain(a *handler.Chain) string {
+	buy := a.Buy
+	sell := a.Sell
 
-	var result strings.Builder
-	result.WriteString(platformInfo)
-	result.WriteString(typeInfo)
-	result.WriteString(bankInfo)
-	result.WriteString(priceInfo)
+	buyPlatformInfo := fmt.Sprintf(
+		"*🔴%s🔴:*\n*Тип сделки:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты (%s):* %.1f - %.1f\n*Доступно (%s):* %.2f\n*Сделки:* %d\n",
+		strings.ToUpper(buy.PlatformName),
+		buy.TradeType,
+		buy.BankName,
+		buy.Cost,
+		buy.SellerName,
+		buy.Fiat, buy.MinLimit, buy.MaxLimit,
+		buy.Asset, buy.Available,
+		buy.SellerDeals,
+	)
 
-	result.WriteString(sellerInfo)
-	result.WriteString(limitsInfo)
-	result.WriteString(amountInfo)
-	result.WriteString(dealsInfo)
+	spotInfo := fmt.Sprintf("\n*ПАРА:* %s\n*СПОТ:* %.3f\n\n", a.PairName, a.SpotPrice)
 
-	return result.String()
+	sellPlatformInfo := fmt.Sprintf(
+		"*🔴%s🔴:*\n*Тип сделки:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты (%s):* %.1f - %.1f\n*Доступно (%s):* %.2f\n*Сделки:* %d\n",
+		strings.ToUpper(sell.PlatformName),
+		sell.TradeType,
+		sell.BankName,
+		sell.Cost,
+		sell.SellerName,
+		sell.Fiat, sell.MinLimit, sell.MaxLimit,
+		sell.Asset, sell.Available,
+		sell.SellerDeals,
+	)
+
+	profit := fmt.Sprintf("\n*ПРОФИТ:* %.3f\n", a.Profit)
+
+	result := buyPlatformInfo + spotInfo + sellPlatformInfo + profit
+	return result
 }

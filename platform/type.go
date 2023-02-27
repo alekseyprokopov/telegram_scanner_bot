@@ -9,13 +9,9 @@ import (
 	"strings"
 )
 
-type PlatformHandler struct {
-	platformsInfo map[string]Platform
-	client        http.Client
-}
-
 type Platform interface {
 	GetResult(c *config.Configuration) (*ResultPlatformData, error)
+
 }
 
 type PlatformTemplate struct {
