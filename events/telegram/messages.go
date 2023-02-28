@@ -53,28 +53,30 @@ func msgChain(a *handler.Chain) string {
 	sell := a.Sell
 
 	buyPlatformInfo := fmt.Sprintf(
-		"*🔴%s🔴:*\n*Тип сделки:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты (%s):* %.1f - %.1f\n*Доступно (%s):* %.2f\n*Сделки:* %d\n",
+		"*🔴%s:*\n*Тип сделки:* %s\n*Монета:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты :* %.1f - %.1f(%s)\n*Доступно :* %.2f(%s)\n*Сделки:* %d\n",
 		strings.ToUpper(buy.PlatformName),
 		buy.TradeType,
+		strings.ToUpper(buy.Asset),
 		buy.BankName,
 		buy.Cost,
 		buy.SellerName,
-		buy.Fiat, buy.MinLimit, buy.MaxLimit,
-		buy.Asset, buy.Available,
+		buy.MinLimit, buy.MaxLimit, buy.Fiat,
+		buy.Available, buy.Asset,
 		buy.SellerDeals,
 	)
 
-	spotInfo := fmt.Sprintf("\n*ПАРА:* %s\n*СПОТ:* %.3f\n\n", a.PairName, a.SpotPrice)
+	spotInfo := fmt.Sprintf("\n*СПОТ:* %s\n*ПАРА:* %s\n*СПОТ:* %.3f\n\n", a.SpotName, a.PairName, a.SpotPrice)
 
 	sellPlatformInfo := fmt.Sprintf(
-		"*🔴%s🔴:*\n*Тип сделки:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты (%s):* %.1f - %.1f\n*Доступно (%s):* %.2f\n*Сделки:* %d\n",
+		"*🔴%s:*\n*Тип сделки:* %s\n*Монета:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты :* %.1f - %.1f(%s)\n*Доступно :* %.2f(%s)\n*Сделки:* %d\n",
 		strings.ToUpper(sell.PlatformName),
 		sell.TradeType,
+		strings.ToUpper(sell.Asset),
 		sell.BankName,
 		sell.Cost,
 		sell.SellerName,
-		sell.Fiat, sell.MinLimit, sell.MaxLimit,
-		sell.Asset, sell.Available,
+		sell.MinLimit, sell.MaxLimit, sell.Fiat,
+		sell.Available, sell.Asset,
 		sell.SellerDeals,
 	)
 

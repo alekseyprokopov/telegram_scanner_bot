@@ -41,11 +41,10 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		defer wg.Done()
 	}()
 
-
 	result.Tokens = map[string]*platform.TokenInfo{}
 
 	for _, token := range p.Tokens {
-		token:=token
+		token := token
 		tokenInfo := &platform.TokenInfo{}
 		result.Tokens[token] = tokenInfo
 
@@ -53,19 +52,18 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		go func() {
 			buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
 			if err != nil || buy == nil {
-				log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
+				log.Printf("can't get buy advertise for bybit, token (%s): %v", token, err)
 			} else {
 				tokenInfo.Buy = *buy
 			}
 			defer wg.Done()
 		}()
 
-
 		wg.Add(1)
 		go func() {
 			sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
 			if err != nil || sell == nil {
-				log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
+				log.Printf("can't get sell advertise for bybit, token (%s): %v", token, err)
 			} else {
 				tokenInfo.Sell = *sell
 			}
@@ -103,6 +101,7 @@ func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
 	response, err := p.doRequest(query)
+
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
@@ -157,8 +156,8 @@ func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 	err := json.Unmarshal(*response, &data)
-	if err != nil {
-		return nil, fmt.Errorf("cant' unmarshall data from bybit response: %w", err)
+	if err != nil || len(data.Result.Items) == 0  {
+		return nil, fmt.Errorf("cant' unmarshall data from  response: %w", err)
 	}
 	item := data.Result.Items[0]
 
@@ -169,7 +168,7 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 	return &platform.Advertise{
 		PlatformName: p.Name,
 		SellerName:   item.NickName,
-		Asset:        item.TokenName,
+		Asset:        item.TokenID,
 		Fiat:         item.CurrencyID,
 		BankName:     p.PayTypesToString(item.Payments),
 		Cost:         cost,

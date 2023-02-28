@@ -28,7 +28,7 @@ var Huobi = PlatformInfo{
 	tokens: []string{
 		"2",  /*USDT*/
 		"1",  /*BTC*/
-		"62", /*USDD*/
+		//"62", /*USDD*/
 		"4",  /*HT*/
 		"22", /*TRX*/
 		"3",  /*ETH*/
@@ -39,7 +39,7 @@ var Huobi = PlatformInfo{
 	tokensDict: map[string]string{
 		"2":  "USDT",
 		"1":  "BTC",
-		"62": "USDD",
+		//"62": "USDD",
 		"4":  "HT",
 		"22": "TRX",
 		"3":  "ETH",
@@ -59,7 +59,7 @@ var allTokens = map[string]bool{
 	"ETH":  true,
 	"SHIB": true,
 	"USDC": true,
-	"USDD": true,
+	//"USDD": true,
 	"HT":   true,
 	"TRX":  true,
 	"XRP":  true,

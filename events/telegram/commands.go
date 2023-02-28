@@ -13,7 +13,9 @@ const (
 	ShowConfigCmd = "/showConfig"
 	HelpCmd       = "/help"
 	StartCmd      = "/start"
-	GetCoursesCmd = "/getCourses"
+	InsideTTCmd   = "/inside_tt"
+	OutsideTTCmd  = "/outside_tt"
+	TestCmd       = "/test"
 )
 
 func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
@@ -33,8 +35,12 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 	case StartCmd:
 		return p.SaveConfig(chatID)
 
-	case GetCoursesCmd:
-		return p.InsideTakerTaker(chatID)
+	case InsideTTCmd:
+		return p.InsideTT(chatID)
+	case OutsideTTCmd:
+		return p.OutsideTT(chatID)
+	//case TestCmd:
+	//	return p.Test(chatID)
 
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
@@ -95,13 +101,42 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 	return nil
 
 }
-
-func (p *EventProcessor) InsideTakerTaker(chatID int) error {
+//func (p *EventProcessor) Test(chatID int) error {
+//	conf, err := p.storage.GetConfig(chatID)
+//	if err != nil {
+//		return err
+//	}
+//	result, _ := p.handler.Platforms["bybit"].GetResult(conf)
+//	log.Printf("GETRESULT: %+v", result)
+//	return nil
+//}
+func (p *EventProcessor) InsideTT(chatID int) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
 	}
 	data := p.handler.InsideTakerTaker(conf)
+
+	if len(*data) == 0 {
+		p.tg.SendMessage(chatID, "Связки не найдены...")
+		return nil
+	}
+
+	for _, item := range *data {
+		chainMessage := msgChain(&item)
+		p.tg.SendMessage(chatID, chainMessage)
+
+	}
+
+	return nil
+}
+
+func (p *EventProcessor) OutsideTT(chatID int) error {
+	conf, err := p.storage.GetConfig(chatID)
+	if err != nil {
+		return err
+	}
+	data := p.handler.OutsideTakerTaker(conf)
 
 	if len(*data) == 0 {
 		p.tg.SendMessage(chatID, "Связки не найдены...")

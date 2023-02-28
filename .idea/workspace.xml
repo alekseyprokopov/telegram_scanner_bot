@@ -12,8 +12,7 @@
       <change beforePath="$PROJECT_DIR$/handler/platformData.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/platformData.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/binance/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/binance.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/platform/bybit/bybit.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit/bybit.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/huobi/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/huobi.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/type.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/type.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/bybit/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit/response.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner_bot" beforeDir="false" afterPath="$PROJECT_DIR$/scanner_bot" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,9 +41,6 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
-  </component>
-  <component name="ProblemsViewState">
-    <option name="selectedIndex" value="1" />
   </component>
   <component name="ProjectId" id="2LUcDzaHu7slhmyHeJXlGe0yQo3" />
   <component name="ProjectViewState">
@@ -79,6 +75,23 @@
       <kind value="FILE" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="telegram_scanner_bot" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="telegram_scanner_bot" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <method v="2" />
     </configuration>
   </component>

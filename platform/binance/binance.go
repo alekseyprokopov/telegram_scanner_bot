@@ -123,7 +123,7 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 	var BinanceJsonData = map[string]interface{}{
 		"proMerchantAds": false,
 		"page":           1,
-		"rows":           10,
+		"rows":           1,
 		"payTypes":       p.GetPayTypes(c),
 		"countries":      []string{},
 		"publisherType":  nil,
@@ -163,9 +163,16 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
 		SellerDeals:  item.Advertiser.MonthOrderCount,
-		TradeType:    item.Adv.TradeType,
+		TradeType:    binanceTradeType(item.Adv.TradeType),
 		Available:    available,
 	}, nil
+}
+
+func binanceTradeType(s string) string {
+	if s == "SELL" {
+		return "BUY"
+	}
+	return "SELL"
 }
 
 func payTypesToString(r *Response) string {
