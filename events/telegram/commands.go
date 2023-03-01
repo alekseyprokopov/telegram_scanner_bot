@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"scanner_bot/config"
+	"strconv"
 	"strings"
 )
 
@@ -39,8 +40,8 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 		return p.InsideTT(chatID)
 	case OutsideTTCmd:
 		return p.OutsideTT(chatID)
-	//case TestCmd:
-	//	return p.Test(chatID)
+	case TestCmd:
+		return p.Test(chatID)
 
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
@@ -101,15 +102,18 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 	return nil
 
 }
-//func (p *EventProcessor) Test(chatID int) error {
-//	conf, err := p.storage.GetConfig(chatID)
-//	if err != nil {
-//		return err
-//	}
-//	result, _ := p.handler.Platforms["bybit"].GetResult(conf)
-//	log.Printf("GETRESULT: %+v", result)
-//	return nil
-//}
+
+func (p *EventProcessor) Test(chatID int) error {
+	conf, err := p.storage.GetConfig(chatID)
+	if err != nil {
+		return err
+	}
+	result, _ := p.handler.Platforms["huobi"].GetResult(conf)
+	spot := result.Spot
+	log.Printf("spot HUOBI: %+v", spot)
+	return nil
+}
+
 func (p *EventProcessor) InsideTT(chatID int) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
@@ -121,12 +125,15 @@ func (p *EventProcessor) InsideTT(chatID int) error {
 		p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
-
-	for _, item := range *data {
-		chainMessage := msgChain(&item)
-		p.tg.SendMessage(chatID, chainMessage)
-
+	println("eventProc: ", len(*data))
+	var ResultMessage string
+	for i, item := range *data {
+		chainMessage := "#" + strconv.Itoa(i) + "\n" + msgChain(&item)
+		ResultMessage += chainMessage
 	}
+	//log.Println(ResultMessage)
+	log.Println()
+	//p.tg.SendMessage(chatID, ResultMessage)
 
 	return nil
 }

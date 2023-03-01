@@ -47,8 +47,11 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 
 	for _, token := range p.Tokens {
 		token:=token
+		//for huobi tokens
+		realToken:= p.TokensDict[token]
+		//
 		tokenInfo := &platform.TokenInfo{}
-		result.Tokens[token] = tokenInfo
+		result.Tokens[realToken] = tokenInfo
 
 		wg.Add(1)
 		go func() {

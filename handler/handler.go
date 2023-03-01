@@ -178,20 +178,25 @@ func (p *PlaftormHandler) InsideTakerTaker(c *config.Configuration) *[]Chain {
 	start := time.Now()
 	var chains []Chain //data, err := p.Huobi.GetResult(c)
 	wg := sync.WaitGroup{}
+	mu := sync.Mutex{}
 	for key, value := range p.Platforms {
 		key, value := key, value
 		wg.Add(1)
 		go func() {
 			platformResult, err := value.GetResult(c)
+			//log.Printf("platformRESULT SPOT:%s : %+v ", platformResult.Name, platformResult.Spot)
 			if err != nil {
 				log.Printf("\ncan't get result from: %s\n", key)
 			}
+			mu.Lock()
 			p.findInsideTT(platformResult, &chains)
+			mu.Unlock()
 			defer wg.Done()
 		}()
 	}
-	log.Println("TIME : ", time.Since(start))
 	wg.Wait()
+	log.Println("TIME : ", time.Since(start))
+	//log.Println(len(chains))
 	return &chains
 }
 
@@ -201,6 +206,8 @@ func IsExistPair(pair string, data *platform.ResultPlatformData) bool {
 }
 
 func (p *PlaftormHandler) findInsideTT(data *platform.ResultPlatformData, chains *[]Chain) {
+	log.Printf("PLATFORMRESULT %s, %+v\n", data.Name, data.Spot)
+	log.Printf("PLATFORMTOKENS %s, %+v\n", data.Name, data.Tokens)
 	for token1, tokenInfo1 := range data.Tokens {
 		for token2, tokenInfo2 := range data.Tokens {
 			if token1 == token2 {
@@ -230,14 +237,14 @@ func (p *PlaftormHandler) findInsideTT(data *platform.ResultPlatformData, chains
 			}
 
 			//if result > -100 {
-				chain := Chain{
-					PairName:  pairName,
-					Buy:       &tokenInfo1.Buy,
-					Sell:      &tokenInfo2.Sell,
-					SpotPrice: spotPrice,
-					Profit:    result,
-				}
-				*chains = append(*chains, chain)
+			chain := Chain{
+				PairName:  pairName,
+				Buy:       &tokenInfo1.Buy,
+				Sell:      &tokenInfo2.Sell,
+				SpotPrice: spotPrice,
+				Profit:    result,
+			}
+			*chains = append(*chains, chain)
 			//}
 		}
 	}

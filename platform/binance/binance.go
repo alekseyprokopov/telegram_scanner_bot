@@ -34,7 +34,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	wg := sync.WaitGroup{}
 	var mu sync.Mutex
 	result.Name = p.Name
-
 	wg.Add(1)
 	go func() {
 		spotData, err := p.getSpotData()

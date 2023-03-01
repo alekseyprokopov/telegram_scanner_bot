@@ -67,6 +67,7 @@ var allTokens = map[string]bool{
 }
 var allPairs = *CreatePairsSet(allTokens)
 
+
 type PlatformInfo struct {
 	name         string
 	p2pURL       string

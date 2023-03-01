@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/hirokisan/bybit/v2"
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"strconv"
@@ -16,13 +16,11 @@ import (
 
 type Platform struct {
 	*platform.PlatformTemplate
-	Bybit *bybit.Client
 }
 
 func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
 		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
-		Bybit:            bybit.NewClient().WithAuth("", ""),
 	}
 }
 
@@ -32,7 +30,7 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	wg := sync.WaitGroup{}
 	var mu sync.Mutex
 	result.Name = p.Name
-
+	//
 	wg.Add(1)
 	go func() {
 		spotData, err := p.getSpotData()
@@ -44,7 +42,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		mu.Unlock()
 		defer wg.Done()
 	}()
-
 
 	for _, token := range p.Tokens {
 		token := token
@@ -86,19 +83,47 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 }
 
 func (p *Platform) getSpotData() (*map[string]float64, error) {
+	//create Req
+	urlAdd := "https://api.bytick.com/v5/market/tickers"
+	q := url.Values{}
+	q.Set("category", "spot")
+	req, err := http.NewRequest(http.MethodGet, urlAdd, nil)
+	req.URL.RawQuery = q.Encode()
+	if err != nil {
+		return nil, fmt.Errorf("can't get request to spot (huobi): %w", err)
+	}
+	//Do req (need to fix and create common DoGetRequestFunc)
+	resp, err := p.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("can't get resposnse from spot (huobi): %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
 
-	set := p.AllPairs
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("can't read info from response: %w", err)
+	}
+	var spotResponse SpotResponse
+	if err := json.Unmarshal(body, &spotResponse); err != nil {
+		return nil, fmt.Errorf("can't unmarshall: %w", err)
+	}
+
 	result := map[string]float64{}
+	set := p.AllPairs
 
-	sym := bybit.SymbolFuture("")
-	response, _ := p.Bybit.Future().InverseFuture().Tickers(sym)
-	for _, item := range response.Result {
-		_, ok := set[string(item.Symbol)]
+	for _, item := range spotResponse.Result.List {
+		_, ok := set[item.Symbol]
 		if ok {
-			result[string(item.Symbol)], _ = strconv.ParseFloat(item.LastPrice, 64)
+			price, err := strconv.ParseFloat(item.LastPrice, 64)
+			if err != nil {
+				return nil, fmt.Errorf("can't parse to Float: %w", err)
+			}
+
+			result[item.Symbol] = price
 		}
 	}
-	return &result, nil
+	return &result, err
+
 }
 
 func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
@@ -164,7 +189,7 @@ func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 	err := json.Unmarshal(*response, &data)
-	if err != nil || len(data.Result.Items) == 0  {
+	if err != nil || len(data.Result.Items) == 0 {
 		return nil, fmt.Errorf("cant' unmarshall data from  response: %w", err)
 	}
 	item := data.Result.Items[0]

@@ -12,7 +12,7 @@ import (
 const (
 	tgBotHost   = "api.telegram.org"
 	storagePath = "data/storage.db"
-	batchSize   = 100
+	batchSize   = 1000
 )
 
 func main() {

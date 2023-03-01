@@ -76,6 +76,8 @@ func (p *EventProcessor) processMessage(event events.Event) error {
 	return nil
 }
 
+
+
 func meta(event events.Event) (Meta, error) {
 	//type assertion
 	res, ok := event.Meta.(Meta)
