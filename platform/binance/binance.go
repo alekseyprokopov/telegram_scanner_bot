@@ -23,14 +23,16 @@ type Platform struct {
 
 func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: platform.New(name,url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
-		Binance: binance.NewClient("", ""),
+		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
+		Binance:          binance.NewClient("", ""),
 	}
 }
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
 	result := platform.ResultPlatformData{}
+	result.Tokens = map[string]*platform.TokenInfo{}
 	wg := sync.WaitGroup{}
+	var mu sync.Mutex
 	result.Name = p.Name
 
 	wg.Add(1)
@@ -39,15 +41,14 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		if err != nil {
 			log.Printf("can't get spot data: %v", err)
 		}
+		mu.Lock()
 		result.Spot = *spotData
+		mu.Unlock()
 		defer wg.Done()
 	}()
 
-
-	result.Tokens = map[string]*platform.TokenInfo{}
-
 	for _, token := range p.Tokens {
-		token:=token
+		token := token
 		tokenInfo := &platform.TokenInfo{}
 		result.Tokens[token] = tokenInfo
 
@@ -57,11 +58,12 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 			if err != nil || buy == nil {
 				log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
 			} else {
+				mu.Lock()
 				tokenInfo.Buy = *buy
+				mu.Unlock()
 			}
 			defer wg.Done()
 		}()
-
 
 		wg.Add(1)
 		go func() {
@@ -69,7 +71,10 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 			if err != nil || sell == nil {
 				log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
 			} else {
+				mu.Lock()
 				tokenInfo.Sell = *sell
+				mu.Unlock()
+
 			}
 			defer wg.Done()
 		}()
@@ -203,5 +208,3 @@ func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
 	}
 	return body, nil
 }
-
-

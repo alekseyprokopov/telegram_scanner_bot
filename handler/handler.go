@@ -102,13 +102,13 @@ func (p *PlaftormHandler) findOutsideTTspot1(first *platform.ResultPlatformData,
 				pairName = pair2name
 
 			}
-			log.Println("----------------")
-
-			log.Println("RESULT: ", result)
-			log.Println("ok1: ", ok1)
-			log.Println("ok1: ", ok2)
-
-			log.Println("----------------")
+			//log.Println("----------------")
+			//
+			//log.Println("RESULT: ", result)
+			//log.Println("ok1: ", ok1)
+			//log.Println("ok1: ", ok2)
+			//
+			//log.Println("----------------")
 
 			if result > 0 {
 				chain := &Chain{
@@ -157,15 +157,8 @@ func (p *PlaftormHandler) findOutsideTTspot2(first *platform.ResultPlatformData,
 				pairName = pair2name
 
 			}
-			log.Println("----------------")
 
-			log.Println("RESULT: ", result)
-			log.Println("ok1: ", ok1)
-			log.Println("ok1: ", ok2)
-
-			log.Println("----------------")
-
-			if result > 0 {
+			if result != 0 {
 				chain := &Chain{
 					PairName:  pairName,
 					Buy:       &tokenInfo1.Buy,
@@ -236,7 +229,7 @@ func (p *PlaftormHandler) findInsideTT(data *platform.ResultPlatformData, chains
 
 			}
 
-			if result > 0 {
+			//if result > -100 {
 				chain := Chain{
 					PairName:  pairName,
 					Buy:       &tokenInfo1.Buy,
@@ -245,7 +238,7 @@ func (p *PlaftormHandler) findInsideTT(data *platform.ResultPlatformData, chains
 					Profit:    result,
 				}
 				*chains = append(*chains, chain)
-			}
+			//}
 		}
 	}
 
