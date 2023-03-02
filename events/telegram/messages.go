@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"scanner_bot/config"
 	"scanner_bot/handler"
+	"strconv"
 	"strings"
 )
 
@@ -20,12 +21,12 @@ const (
 )
 
 func msgConfig(c *config.Configuration) string {
-	userInfo := fmt.Sprintf("⚙*Конфигурация пользователя:* id%d⚙ \n\n", c.ChatId)
+	userInfo := fmt.Sprintf("⚙Конфигурация пользователя: id%d⚙ \n\n", c.ChatId)
 
-	minValue := fmt.Sprintf("*Минимальное значение:* %d \n", c.UserConfig.MinValue)
-	minSpread := fmt.Sprintf("*Минимальный спред:* %.1f \n", c.UserConfig.MinSpread)
-	maxSpread := fmt.Sprintf("*Максимальный спред:* %.1f \n", c.UserConfig.MaxSpread)
-	payTypes := fmt.Sprintf("*Банки:* %s \n \n", payTypesToString(c))
+	minValue := fmt.Sprintf("Минимальное значение: %d \n", c.UserConfig.MinValue)
+	minSpread := fmt.Sprintf("Минимальный спред: %.1f \n", c.UserConfig.MinSpread)
+	maxSpread := fmt.Sprintf("Максимальный спред: %.1f \n", c.UserConfig.MaxSpread)
+	payTypes := fmt.Sprintf("Банки: %s \n \n", payTypesToString(c))
 
 	var result strings.Builder
 	result.WriteString(userInfo)
@@ -53,9 +54,8 @@ func msgChain(a *handler.Chain) string {
 	sell := a.Sell
 
 	buyPlatformInfo := fmt.Sprintf(
-		"*🔴%s:*\n*Тип сделки:* %s\n*Монета:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты :* %.1f - %.1f(%s)\n*Доступно :* %.2f(%s)\n*Сделки:* %d\n",
+		"🔴%s:\nПокупка: %s\nБанк: %s\nЦена: %f\nПродавец: %s\nЛимиты : %.1f - %.1f(%s)\nДоступно : %.2f(%s)\nСделки: %d\n",
 		strings.ToUpper(buy.PlatformName),
-		buy.TradeType,
 		strings.ToUpper(buy.Asset),
 		buy.BankName,
 		buy.Cost,
@@ -65,12 +65,13 @@ func msgChain(a *handler.Chain) string {
 		buy.SellerDeals,
 	)
 
-	spotInfo := fmt.Sprintf("\n*СПОТ:* %s\n*ПАРА:* %s\n*СПОТ:* %.3f\n\n", a.SpotName, a.PairName, a.SpotPrice)
-
+	spotInfo := fmt.Sprintf("\nПАРА: %s\nЦЕНА: %f\n\n", a.PairName, a.SpotPrice)
+	if a.SpotName != "" {
+		spotInfo = "\nСПОТ: " + a.SpotName + spotInfo
+	}
 	sellPlatformInfo := fmt.Sprintf(
-		"*🔴%s:*\n*Тип сделки:* %s\n*Монета:* %s\n*Банк:* %s\n*Цена:* %.2f\n*Продавец:* %s\n*Лимиты :* %.1f - %.1f(%s)\n*Доступно :* %.2f(%s)\n*Сделки:* %d\n",
+		"🔴%s:\nПродажа: %s\nБанк: %s\nЦена: %f\nПродавец: %s\nЛимиты : %.1f - %.1f(%s)\nДоступно : %.2f(%s)\nСделки: %d\n",
 		strings.ToUpper(sell.PlatformName),
-		sell.TradeType,
 		strings.ToUpper(sell.Asset),
 		sell.BankName,
 		sell.Cost,
@@ -80,8 +81,17 @@ func msgChain(a *handler.Chain) string {
 		sell.SellerDeals,
 	)
 
-	profit := fmt.Sprintf("\n*ПРОФИТ:* %.3f\n", a.Profit)
+	profit := fmt.Sprintf("\nПРОФИТ: %.3f\n", a.Profit)
 
 	result := buyPlatformInfo + spotInfo + sellPlatformInfo + profit
 	return result
+}
+
+func getResultMessage(data []handler.Chain) string {
+	resultMessage := ""
+	for i, item := range data {
+		chainMessage := "#" + strconv.Itoa(i) + "\n" + msgChain(&item)
+		resultMessage += chainMessage
+	}
+	return resultMessage
 }

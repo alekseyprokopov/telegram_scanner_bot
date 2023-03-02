@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/url"
 	"scanner_bot/config"
-	"strconv"
+	"sort"
 	"strings"
 )
 
@@ -119,21 +119,18 @@ func (p *EventProcessor) InsideTT(chatID int) error {
 	if err != nil {
 		return err
 	}
-	data := p.handler.InsideTakerTaker(conf)
+	data := *p.handler.InsideTakerTaker(conf)
+	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
 
-	if len(*data) == 0 {
+	if len(data) == 0 {
 		p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
-	println("eventProc: ", len(*data))
-	var ResultMessage string
-	for i, item := range *data {
-		chainMessage := "#" + strconv.Itoa(i) + "\n" + msgChain(&item)
-		ResultMessage += chainMessage
-	}
-	//log.Println(ResultMessage)
-	log.Println()
-	//p.tg.SendMessage(chatID, ResultMessage)
+
+	message := getResultMessage(data)
+	p.tg.SendMessage(chatID, message)
+
+	fmt.Println("ДЛИНА: ", len(data))
 
 	return nil
 }
@@ -143,18 +140,18 @@ func (p *EventProcessor) OutsideTT(chatID int) error {
 	if err != nil {
 		return err
 	}
-	data := p.handler.OutsideTakerTaker(conf)
+	data := *p.handler.OutsideTakerTaker(conf)
+	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
 
-	if len(*data) == 0 {
+	if len(data) == 0 {
 		p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
+	message := getResultMessage(data)
+	log.Println(message)
+	log.Println(len(data))
+	//p.tg.SendMessage(chatID, message)
 
-	for _, item := range *data {
-		chainMessage := msgChain(&item)
-		p.tg.SendMessage(chatID, chainMessage)
-
-	}
 
 	return nil
 }
