@@ -15,7 +15,9 @@ const (
 	HelpCmd       = "/help"
 	StartCmd      = "/start"
 	InsideTTCmd   = "/inside_tt"
+	InsideTMCmd   = "/inside_tm"
 	OutsideTTCmd  = "/outside_tt"
+	OutsideTMCmd  = "/outside_tm"
 	TestCmd       = "/test"
 )
 
@@ -38,8 +40,12 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 
 	case InsideTTCmd:
 		return p.InsideTT(chatID)
+	case InsideTMCmd:
+		return p.InsideTM(chatID)
 	case OutsideTTCmd:
 		return p.OutsideTT(chatID)
+	case OutsideTMCmd:
+		return p.OutsideTM(chatID)
 	case TestCmd:
 		return p.Test(chatID)
 
@@ -119,7 +125,28 @@ func (p *EventProcessor) InsideTT(chatID int) error {
 	if err != nil {
 		return err
 	}
-	data := *p.handler.InsideTakerTaker(conf)
+	data := *p.handler.InsideTT(conf)
+	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
+
+	if len(data) == 0 {
+		p.tg.SendMessage(chatID, "Связки не найдены...")
+		return nil
+	}
+
+	message := getResultMessage(data)
+	p.tg.SendMessage(chatID, message)
+
+	fmt.Println("ДЛИНА: ", len(data))
+
+	return nil
+}
+
+func (p *EventProcessor) InsideTM(chatID int) error {
+	conf, err := p.storage.GetConfig(chatID)
+	if err != nil {
+		return err
+	}
+	data := *p.handler.InsideTM(conf)
 	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
 
 	if len(data) == 0 {
@@ -140,7 +167,7 @@ func (p *EventProcessor) OutsideTT(chatID int) error {
 	if err != nil {
 		return err
 	}
-	data := *p.handler.OutsideTakerTaker(conf)
+	data := *p.handler.OutsideTT(conf)
 	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
 
 	if len(data) == 0 {
@@ -148,10 +175,26 @@ func (p *EventProcessor) OutsideTT(chatID int) error {
 		return nil
 	}
 	message := getResultMessage(data)
-	log.Println(message)
-	log.Println(len(data))
-	//p.tg.SendMessage(chatID, message)
+	p.tg.SendMessage(chatID, message)
 
+	return nil
+}
+
+func (p *EventProcessor) OutsideTM(chatID int) error {
+	conf, err := p.storage.GetConfig(chatID)
+	if err != nil {
+		return err
+	}
+	data := *p.handler.OutsideTM(conf)
+	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
+
+	if len(data) == 0 {
+		p.tg.SendMessage(chatID, "Связки не найдены...")
+		return nil
+	}
+	message := getResultMessage(data)
+	fmt.Println(message)
+	p.tg.SendMessage(chatID, message)
 
 	return nil
 }
