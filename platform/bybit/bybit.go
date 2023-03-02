@@ -4,107 +4,32 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"net/url"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"strconv"
-	"sync"
 )
 
 type Platform struct {
 	*platform.PlatformTemplate
 }
 
-func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
+func New(name string, url string,apiUrl string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
+		PlatformTemplate: platform.New(name, url, apiUrl, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
 	}
 }
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
-	result := platform.ResultPlatformData{}
-	result.Tokens = map[string]*platform.TokenInfo{}
-	wg := sync.WaitGroup{}
-	var mu sync.Mutex
-	result.Name = p.Name
-	//
-	wg.Add(1)
-	go func() {
-		spotData, err := p.getSpotData()
-		if err != nil {
-			log.Printf("can't get spot data: %v", err)
-		}
-		mu.Lock()
-		result.Spot = *spotData
-		mu.Unlock()
-		defer wg.Done()
-	}()
-
-	for _, token := range p.Tokens {
-		token := token
-		tokenInfo := &platform.TokenInfo{}
-		result.Tokens[token] = tokenInfo
-
-		wg.Add(1)
-		go func() {
-			buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-			if err != nil || buy == nil {
-				log.Printf("can't get buy advertise for bybit, token (%s): %v", token, err)
-			} else {
-				mu.Lock()
-				tokenInfo.Buy = *buy
-				mu.Unlock()
-
-			}
-			defer wg.Done()
-		}()
-
-		wg.Add(1)
-		go func() {
-			sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-			if err != nil || sell == nil {
-				log.Printf("can't get sell advertise for bybit, token (%s): %v", token, err)
-			} else {
-				mu.Lock()
-				tokenInfo.Sell = *sell
-				mu.Unlock()
-			}
-			defer wg.Done()
-		}()
-		//result.Tokens[token] = tokenInfo
-
-	}
-	wg.Wait()
-
-	return &result, nil
+	return p.TemplateResult(c, p.spotData, p.advertise)
 }
 
-func (p *Platform) getSpotData() (*map[string]float64, error) {
-	//create Req
-	urlAdd := "https://api.bytick.com/v5/market/tickers"
-	q := url.Values{}
-	q.Set("category", "spot")
-	req, err := http.NewRequest(http.MethodGet, urlAdd, nil)
-	req.URL.RawQuery = q.Encode()
+func (p *Platform) spotData() (*map[string]float64, error) {
+	data, err := p.DoGetRequest(p.ApiUrl, "")
 	if err != nil {
-		return nil, fmt.Errorf("can't get request to spot (huobi): %w", err)
-	}
-	//Do req (need to fix and create common DoGetRequestFunc)
-	resp, err := p.Client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("can't get resposnse from spot (huobi): %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("can't read info from response: %w", err)
+		return nil, fmt.Errorf("can't do getRequest to huobi API: %w", err)
 	}
 	var spotResponse SpotResponse
-	if err := json.Unmarshal(body, &spotResponse); err != nil {
+	if err := json.Unmarshal(*data, &spotResponse); err != nil {
 		return nil, fmt.Errorf("can't unmarshall: %w", err)
 	}
 
@@ -126,20 +51,20 @@ func (p *Platform) getSpotData() (*map[string]float64, error) {
 
 }
 
-func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
+func (p *Platform) advertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 
 	query, err := p.getQuery(userConfig, token, tradeType)
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
-	response, err := p.doRequest(query)
+	response, err := p.DoPostRequest(query)
 
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
 
-	advertise, err := p.responseToAdvertise(&response)
+	advertise, err := p.responseToAdvertise(response)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
@@ -163,27 +88,6 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 		return nil, fmt.Errorf("can't transform bytes to query: %w", err)
 	}
 	return result, nil
-}
-
-func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodPost, p.Url, query)
-	if err != nil {
-		return nil, fmt.Errorf("can't do bybit request: %w", err)
-	}
-	req.Header.Set("accept", "application/json")
-	req.Header.Set("content-type", "application/json;charset=UTF-8")
-	req.Header.Set("user-agent", `Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36`)
-
-	resp, err := p.Client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("can't get response: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("can't read body: %w", err)
-	}
-	return body, nil
 }
 
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
@@ -220,4 +124,3 @@ func bybitTradeType(i int) string {
 	return "SELL"
 }
 
-// сделать функцию универсальной!!!

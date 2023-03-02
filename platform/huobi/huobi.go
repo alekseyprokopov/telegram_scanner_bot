@@ -3,9 +3,7 @@ package huobi
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"net/url"
 	"scanner_bot/config"
 	"scanner_bot/platform"
@@ -18,9 +16,9 @@ type Platform struct {
 	*platform.PlatformTemplate
 }
 
-func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
+func New(name string, url string, apiUrl string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
+		PlatformTemplate: platform.New(name, url, apiUrl, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
 	}
 }
 
@@ -43,12 +41,10 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 		defer wg.Done()
 	}()
 
-
-
 	for _, token := range p.Tokens {
-		token:=token
+		token := token
 		//for huobi tokens
-		realToken:= p.TokensDict[token]
+		realToken := p.TokensDict[token]
 		//
 		tokenInfo := &platform.TokenInfo{}
 		result.Tokens[realToken] = tokenInfo
@@ -65,7 +61,6 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 			}
 			defer wg.Done()
 		}()
-
 
 		wg.Add(1)
 		go func() {
@@ -87,25 +82,13 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	return &result, nil
 }
 func (p *Platform) getSpotData() (*map[string]float64, error) {
-	//create Req
-	url := "https://api.huobi.pro/market/tickers"
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	data, err := p.DoGetRequest(p.ApiUrl, "")
 	if err != nil {
-		return nil, fmt.Errorf("can't get request to spot (huobi): %w", err)
+		return nil, fmt.Errorf("can't do getRequest to huobi API: %w", err)
 	}
-	//Do req (need to fix and create common DoGetRequestFunc)
-	resp, err := p.Client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("can't get resposnse from spot (huobi): %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("can't read info from response: %w", err)
-	}
 	var spotResponse SpotResponse
-	if err := json.Unmarshal(body, &spotResponse); err != nil {
+	if err := json.Unmarshal(*data, &spotResponse); err != nil {
 		return nil, fmt.Errorf("can't unmarshall: %w", err)
 	}
 
@@ -125,16 +108,14 @@ func (p *Platform) getSpotData() (*map[string]float64, error) {
 func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 	query := p.getQuery(userConfig, token, tradeType)
-	response, err := p.doRequest(query)
+	response, err := p.DoGetRequest(p.Url, query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
-
 	advertise, err := p.responseToAdvertise(response)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
-
 	return advertise, nil
 }
 
@@ -161,28 +142,6 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) st
 	return u.Encode()
 }
 
-func (p *Platform) doRequest(query string) (*[]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, p.Url, nil)
-	req.URL.RawQuery = query
-	if err != nil {
-		return nil, fmt.Errorf("can't do huobi request: %w", err)
-	}
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("content-type", "application/json")
-	req.Header.Set("user-agent", `Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36`)
-
-	resp, err := p.Client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("can't get response: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("can't read body: %w", err)
-	}
-	return &body, nil
-}
-
 func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
 	var data Response
 	err := json.Unmarshal(*response, &data)
@@ -190,7 +149,6 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		return nil, fmt.Errorf("cant' unmarshall data from huobi response: %w", err)
 	}
 	item := data.Data[0]
-
 	cost, _ := strconv.ParseFloat(item.Price, 64)
 	minLimit, _ := strconv.ParseFloat(item.MinTradeLimit, 64)
 	maxLimit, _ := strconv.ParseFloat(item.MaxTradeLimit, 64)

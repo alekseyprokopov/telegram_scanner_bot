@@ -6,14 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/adshao/go-binance/v2"
-	"io"
-	"log"
-	"net/http"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 type Platform struct {
@@ -21,82 +17,30 @@ type Platform struct {
 	Binance *binance.Client
 }
 
-func New(name string, url string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
+func New(name string, url string, apiUrl string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
-		PlatformTemplate: platform.New(name, url, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
+		PlatformTemplate: platform.New(name, url, apiUrl, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
 		Binance:          binance.NewClient("", ""),
 	}
 }
 
 func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformData, error) {
-	result := platform.ResultPlatformData{}
-	result.Tokens = map[string]*platform.TokenInfo{}
-	wg := sync.WaitGroup{}
-	var mu sync.Mutex
-	result.Name = p.Name
-	wg.Add(1)
-	go func() {
-		spotData, err := p.getSpotData()
-		if err != nil {
-			log.Printf("can't get spot data: %v", err)
-		}
-		mu.Lock()
-		result.Spot = *spotData
-		mu.Unlock()
-		defer wg.Done()
-	}()
-
-	for _, token := range p.Tokens {
-		token := token
-		tokenInfo := &platform.TokenInfo{}
-		result.Tokens[token] = tokenInfo
-
-		wg.Add(1)
-		go func() {
-			buy, err := p.getAdvertise(c, token, p.TradeTypes[0])
-			if err != nil || buy == nil {
-				log.Printf("can't get buy advertise for huobi, token (%s): %v", token, err)
-			} else {
-				mu.Lock()
-				tokenInfo.Buy = *buy
-				mu.Unlock()
-			}
-			defer wg.Done()
-		}()
-
-		wg.Add(1)
-		go func() {
-			sell, err := p.getAdvertise(c, token, p.TradeTypes[1])
-			if err != nil || sell == nil {
-				log.Printf("can't get sell advertise for huobi, token (%s): %v", token, err)
-			} else {
-				mu.Lock()
-				tokenInfo.Sell = *sell
-				mu.Unlock()
-
-			}
-			defer wg.Done()
-		}()
-
-	}
-	wg.Wait()
-
-	return &result, nil
+	return p.TemplateResult(c, p.spotData, p.advertise)
 }
 
-func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
+func (p *Platform) advertise(c *config.Configuration, token string, tradeType string) (*platform.Advertise, error) {
 	userConfig := &c.UserConfig
 
 	query, err := p.getQuery(userConfig, token, tradeType)
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
-	response, err := p.doRequest(query)
+	response, err := p.DoPostRequest(query)
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get binance response: %w", err)
 	}
 
-	advertise, err := p.responseToAdvertise(&response)
+	advertise, err := p.responseToAdvertise(response)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
@@ -104,7 +48,7 @@ func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType
 	return advertise, nil
 }
 
-func (p *Platform) getSpotData() (*map[string]float64, error) {
+func (p *Platform) spotData() (*map[string]float64, error) {
 	set := p.AllPairs
 
 	brokens := "USDC"
@@ -190,25 +134,6 @@ func payTypesToString(r *Response) string {
 
 	}
 	return strings.Join(result, ", ")
-}
-func (p *Platform) doRequest(query *bytes.Buffer) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodPost, p.Url, query)
-	if err != nil {
-		return nil, fmt.Errorf("can't do binance request: %w", err)
-	}
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("content-type", "application/json")
-	req.Header.Set("user-agent", `Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36`)
-	resp, err := p.Client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("can't get response: %w", err)
-	}
-	defer func() { _ = resp.Body.Close() }()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("can't read body: %w", err)
-	}
-	return body, nil
 }
 
 //func (p *Platform) getSpotData() (*map[string]float64, error) {

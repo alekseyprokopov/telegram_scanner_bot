@@ -13,15 +13,14 @@ import (
 
 type PlaftormHandler struct {
 	Platforms map[string]platform.Platform
-
 }
 
 func New() *PlaftormHandler {
 	return &PlaftormHandler{
 		Platforms: map[string]platform.Platform{
-			Binance.name: binance.New(Binance.name, Binance.p2pURL, Binance.tradeTypes, Binance.tokens, Binance.tokensDict, Binance.payTypesDict, allPairs),
-			Bybit.name:   bybit.New(Bybit.name, Bybit.p2pURL, Bybit.tradeTypes, Bybit.tokens, Bybit.tokensDict, Bybit.payTypesDict, allPairs),
-			Huobi.name:   huobi.New(Huobi.name, Huobi.p2pURL, Huobi.tradeTypes, Huobi.tokens, Huobi.tokensDict, Huobi.payTypesDict, allPairs),
+			Binance.name: binance.New(Binance.name, Binance.p2pURL, Binance.apiUrl, Binance.tradeTypes, Binance.tokens, Binance.tokensDict, Binance.payTypesDict, allPairs),
+			Bybit.name:   bybit.New(Bybit.name, Bybit.p2pURL, Bybit.apiUrl, Bybit.tradeTypes, Bybit.tokens, Bybit.tokensDict, Bybit.payTypesDict, allPairs),
+			Huobi.name:   huobi.New(Huobi.name, Huobi.p2pURL, Huobi.apiUrl, Huobi.tradeTypes, Huobi.tokens, Huobi.tokensDict, Huobi.payTypesDict, allPairs),
 		}}
 }
 func (p *PlaftormHandler) OutsideTakerTaker(c *config.Configuration) *[]Chain {
@@ -49,11 +48,10 @@ func (p *PlaftormHandler) OutsideTakerTaker(c *config.Configuration) *[]Chain {
 
 	for _, item1 := range platformResults {
 		for _, item2 := range platformResults {
-			p.findOutsideTTspot1(item1, item2, &chains,c.UserConfig.MinProfit)
-			p.findOutsideTTspot2(item1, item2, &chains,c.UserConfig.MinProfit)
+			p.findOutsideTTspot1(item1, item2, &chains, c.UserConfig.MinProfit)
+			p.findOutsideTTspot2(item1, item2, &chains, c.UserConfig.MinProfit)
 		}
 	}
-
 
 	log.Println("TIME : ", time.Since(start))
 	return &chains
@@ -146,8 +144,6 @@ func (p *PlaftormHandler) findOutsideTTspot2(first *platform.ResultPlatformData,
 		}
 	}
 }
-
-
 
 func (p *PlaftormHandler) InsideTakerTaker(c *config.Configuration) *[]Chain {
 	start := time.Now()

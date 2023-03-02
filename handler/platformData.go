@@ -3,6 +3,7 @@ package handler
 var Binance = PlatformInfo{
 	name:       "binance",
 	p2pURL:     "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search",
+	apiUrl:     "https://api.binance.com/api/v3/exchangeInfo",
 	tokens:     []string{"USDT", "BTC", "BUSD", "BNB", "ETH", "SHIB"},
 	tradeTypes: []string{"BUY", "SELL"},
 	payTypesDict: map[string]string{
@@ -14,6 +15,7 @@ var Binance = PlatformInfo{
 var Bybit = PlatformInfo{
 	name:       "bybit",
 	p2pURL:     "https://api2.bybit.com/fiat/otc/item/online",
+	apiUrl:     "https://api.bytick.com/v5/market/tickers",
 	tokens:     []string{"USDT", "BTC", "ETH", "USDC"},
 	tradeTypes: []string{"1", "0"},
 	payTypesDict: map[string]string{
@@ -25,9 +27,10 @@ var Bybit = PlatformInfo{
 var Huobi = PlatformInfo{
 	name:   "huobi",
 	p2pURL: "https://otc-akm.huobi.com/v1/data/trade-market",
+	apiUrl: "https://api.huobi.pro/market/tickers",
 	tokens: []string{
-		"2",  /*USDT*/
-		"1",  /*BTC*/
+		"2", /*USDT*/
+		"1", /*BTC*/
 		//"62", /*USDD*/
 		"4",  /*HT*/
 		"22", /*TRX*/
@@ -37,8 +40,8 @@ var Huobi = PlatformInfo{
 	},
 	tradeTypes: []string{"SELL", "BUY"},
 	tokensDict: map[string]string{
-		"2":  "USDT",
-		"1":  "BTC",
+		"2": "USDT",
+		"1": "BTC",
 		//"62": "USDD",
 		"4":  "HT",
 		"22": "TRX",
@@ -60,17 +63,17 @@ var allTokens = map[string]bool{
 	"SHIB": true,
 	"USDC": true,
 	//"USDD": true,
-	"HT":   true,
-	"TRX":  true,
-	"XRP":  true,
-	"LTC":  true,
+	"HT":  true,
+	"TRX": true,
+	"XRP": true,
+	"LTC": true,
 }
 var allPairs = *CreatePairsSet(allTokens)
-
 
 type PlatformInfo struct {
 	name         string
 	p2pURL       string
+	apiUrl       string
 	tokens       []string
 	tokensDict   map[string]string //необязательно
 	tradeTypes   []string
