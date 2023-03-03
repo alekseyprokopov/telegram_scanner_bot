@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"log"
-	tgClient "scanner_bot/clients/telegram"
+	"scanner_bot/clients/telegramAPI"
 	eventConsumer "scanner_bot/consumer/event-consumer"
 	eventProcessor "scanner_bot/events/telegram"
 	"scanner_bot/storage/sqlite"
@@ -26,7 +26,8 @@ func main() {
 	}
 
 	eventsProcessor := eventProcessor.New(
-		tgClient.New(tgBotHost, token()),
+		//tgClient.New(tgBotHost, token()),
+		telegramAPI.New(token()),
 		s,
 	)
 
@@ -34,10 +35,10 @@ func main() {
 
 	consumer := eventConsumer.New(eventsProcessor, eventsProcessor, batchSize)
 
-	if err := consumer.Start(); err != nil {
-		log.Fatal()
-	}
-
+	//if err := consumer.Start(); err != nil {
+	//	log.Fatal()
+	//}
+	consumer.Start()
 }
 
 func token() string {

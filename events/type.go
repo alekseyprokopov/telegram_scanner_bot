@@ -1,11 +1,17 @@
 package events
 
+import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+
+//type Fetcher interface {
+//	Fetch(limit int) ([]Event, error)
+//}
+
 type Fetcher interface {
-	Fetch(limit int) ([]Event, error)
+	Fetch(limit int) (*tgbotapi.UpdatesChannel)
 }
 
 type Processor interface {
-	Process(e Event) error
+	Process(u tgbotapi.Update) error
 }
 
 type Type int

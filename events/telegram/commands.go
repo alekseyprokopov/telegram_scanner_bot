@@ -21,7 +21,7 @@ const (
 	TestCmd       = "/test"
 )
 
-func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
+func (p *EventProcessor) doCmd(text string, chatID int64, username string) error {
 	text = strings.TrimSpace(text)
 
 	log.Printf("got new command: %s, from user: %s", text, username)
@@ -55,7 +55,7 @@ func (p *EventProcessor) doCmd(text string, chatID int, username string) error {
 
 }
 
-func (p *EventProcessor) SaveConfig(chatID int) (err error) {
+func (p *EventProcessor) SaveConfig(chatID int64) (err error) {
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("can't save page (cmd): %w", err)
@@ -88,7 +88,7 @@ func (p *EventProcessor) SaveConfig(chatID int) (err error) {
 //
 //}
 
-func (p *EventProcessor) ShowConfig(chatID int) (err error) {
+func (p *EventProcessor) ShowConfig(chatID int64) (err error) {
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("can't show config (cmd): %w", err)
@@ -109,7 +109,7 @@ func (p *EventProcessor) ShowConfig(chatID int) (err error) {
 
 }
 
-func (p *EventProcessor) Test(chatID int) error {
+func (p *EventProcessor) Test(chatID int64) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func (p *EventProcessor) Test(chatID int) error {
 	return nil
 }
 
-func (p *EventProcessor) InsideTT(chatID int) error {
+func (p *EventProcessor) InsideTT(chatID int64) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
@@ -141,7 +141,7 @@ func (p *EventProcessor) InsideTT(chatID int) error {
 	return nil
 }
 
-func (p *EventProcessor) InsideTM(chatID int) error {
+func (p *EventProcessor) InsideTM(chatID int64) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
@@ -162,7 +162,7 @@ func (p *EventProcessor) InsideTM(chatID int) error {
 	return nil
 }
 
-func (p *EventProcessor) OutsideTT(chatID int) error {
+func (p *EventProcessor) OutsideTT(chatID int64) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
@@ -180,7 +180,7 @@ func (p *EventProcessor) OutsideTT(chatID int) error {
 	return nil
 }
 
-func (p *EventProcessor) OutsideTM(chatID int) error {
+func (p *EventProcessor) OutsideTM(chatID int64) error {
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
@@ -203,11 +203,11 @@ func (p EventProcessor) getConfig() {
 
 }
 
-func (p *EventProcessor) SendHelp(chatId int) error {
+func (p *EventProcessor) SendHelp(chatId int64) error {
 	return p.tg.SendMessage(chatId, msgHelp)
 }
 
-func (p *EventProcessor) SendHello(chatId int) error {
+func (p *EventProcessor) SendHello(chatId int64) error {
 	return p.tg.SendMessage(chatId, msgHello)
 }
 

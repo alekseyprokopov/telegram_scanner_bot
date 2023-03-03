@@ -6,7 +6,7 @@ import (
 )
 
 type Configuration struct {
-	ChatId     int    `json:"user_name"`
+	ChatId     int64    `json:"user_name"`
 	UserConfig Config `json:"user_config"`
 }
 
@@ -46,7 +46,7 @@ var DefaultUserConfig = &Config{
 	PayTypes:  map[string]bool{"Сбербанк": true, "Тинькофф": true, "Райффайзен": true, "QIWI": true, "ЮMoney": true},
 }
 
-func ToDefaultConfig(userId int) *Configuration {
+func ToDefaultConfig(userId int64) *Configuration {
 	return &Configuration{
 		ChatId:     userId,
 		UserConfig: *DefaultUserConfig,

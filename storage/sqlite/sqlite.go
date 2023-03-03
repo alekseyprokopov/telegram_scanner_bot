@@ -41,7 +41,7 @@ func (s *Storage) Save(c *config.Configuration) error {
 	return nil
 }
 
-func (s *Storage) GetConfig(chatId int) (*config.Configuration, error) {
+func (s *Storage) GetConfig(chatId int64) (*config.Configuration, error) {
 	q := `SELECT user_config FROM configs WHERE chat_id = ?`
 
 	var userConfigData string
@@ -62,7 +62,7 @@ func (s *Storage) GetConfig(chatId int) (*config.Configuration, error) {
 	}, nil
 }
 
-func (s *Storage) IsExists(chatId int) (bool, error) {
+func (s *Storage) IsExists(chatId int64) (bool, error) {
 	q := `SELECT COUNT(*) FROM configs WHERE chat_id = ?`
 
 	var count int

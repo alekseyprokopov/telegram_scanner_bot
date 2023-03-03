@@ -159,7 +159,7 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		PlatformName: p.Name,
 		SellerName:   item.UserName,
 		Asset:        p.TokenFromDict(strconv.Itoa(item.CoinID)),
-		Fiat:         strconv.Itoa(item.Currency) + " (RUB)",
+		Fiat:         fiatDict[item.Currency],
 		BankName:     p.PayTypesToString(pays),
 		Cost:         cost,
 		MinLimit:     minLimit,
@@ -168,4 +168,8 @@ func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, e
 		TradeType:    huobiTradeType(item.TradeType),
 		Available:    available,
 	}, nil
+}
+
+var fiatDict = map[int]string{
+	11: "RUB",
 }

@@ -8,6 +8,7 @@ require (
 	github.com/adshao/go-binance/v2 v2.4.1 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hirokisan/bybit/v2 v2.9.0 // indirect

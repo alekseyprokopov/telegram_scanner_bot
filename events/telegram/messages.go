@@ -54,8 +54,9 @@ func msgChain(a *handler.Chain) string {
 	sell := a.Sell
 
 	buyPlatformInfo := fmt.Sprintf(
-		"🔴%s:\nПокупка: %s\nБанк: %s\nЦена: %f\nПродавец: %s\nЛимиты : %.1f - %.1f(%s)\nДоступно : %.2f(%s)\nСделки: %d\n",
-		strings.ToUpper(buy.PlatformName),
+		"%s <b>%s:</b>\nПокупка: %s\nБанк: %s\nЦена: %g\nПродавец: %s\nЛимиты : %g - %g %s\nДоступно : %g %s\nСделки: %d\n",
+		platformBall[buy.PlatformName],
+		strings.Title(buy.PlatformName),
 		strings.ToUpper(buy.Asset),
 		buy.BankName,
 		buy.Cost,
@@ -65,13 +66,14 @@ func msgChain(a *handler.Chain) string {
 		buy.SellerDeals,
 	)
 
-	spotInfo := fmt.Sprintf("\nПАРА: %s\nЦЕНА: %f\n\n", a.PairName, a.SpotPrice)
+	spotInfo := fmt.Sprintf("\nПара: %s\nЦена: %g\n\n", a.PairName, a.SpotPrice)
 	if a.SpotName != "" {
-		spotInfo = "\nСПОТ: " + a.SpotName + spotInfo
+		spotInfo = "\nСпот: " + a.SpotName + spotInfo
 	}
 	sellPlatformInfo := fmt.Sprintf(
-		"🔴%s:\nПродажа: %s\nБанк: %s\nЦена: %f\nПродавец: %s\nЛимиты : %.1f - %.1f(%s)\nДоступно : %.2f(%s)\nСделки: %d\n",
-		strings.ToUpper(sell.PlatformName),
+		"%s <b>%s:</b>\nПокупка: %s\nБанк: %s\nЦена: %g\nПродавец: %s\nЛимиты : %g - %g %s\nДоступно : %g %s\nСделки: %d\n",
+		platformBall[sell.PlatformName],
+		strings.Title(sell.PlatformName),
 		strings.ToUpper(sell.Asset),
 		sell.BankName,
 		sell.Cost,
@@ -81,17 +83,25 @@ func msgChain(a *handler.Chain) string {
 		sell.SellerDeals,
 	)
 
-	profit := fmt.Sprintf("\nПРОФИТ: %.3f\n", a.Profit)
+	profit := fmt.Sprintf("\n<b>Профит:</b> %.2f", a.Profit) + `%` + "\n"
 
 	result := buyPlatformInfo + spotInfo + sellPlatformInfo + profit
 	return result
 }
 
 func getResultMessage(data []handler.Chain) string {
-	resultMessage := ""
+	var resultMessage []string
+	sep := "--------\n"
 	for i, item := range data {
-		chainMessage := "#" + strconv.Itoa(i) + "\n" + msgChain(&item)
-		resultMessage += chainMessage
+		chainMessage := "#" + strconv.Itoa(i+1) + "\n" + msgChain(&item)
+		resultMessage = append(resultMessage, chainMessage)
 	}
-	return resultMessage
+	return strings.Join(resultMessage, sep)
+}
+
+var platformBall = map[string]string{
+	"binance":  "🔴",
+	"bybit":    "\U0001F7E0",
+	"huobi":    "\U0001F7E1",
+	"garantex": "\U0001F7E2",
 }

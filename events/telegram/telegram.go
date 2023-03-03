@@ -3,29 +3,32 @@ package telegram
 import (
 	"errors"
 	"fmt"
-	"scanner_bot/clients/telegram"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"scanner_bot/clients/telegramAPI"
 	"scanner_bot/events"
 	"scanner_bot/handler"
 	"scanner_bot/storage"
 )
 
 type EventProcessor struct {
-	tg      *telegram.Client
+	//tg      *telegram.Client
+	tg      *telegramAPI.Client
 	offset  int
 	storage storage.Storage
 	handler *handler.PlaftormHandler
 }
 
 type Meta struct {
-	ChatId   int
+	ChatId   int64
 	Username string
 }
 
 var ErrUnknownEventType = errors.New("unknown event type")
 var ErrUnknownMetaType = errors.New("unknown meta type")
 
-func New(client *telegram.Client, storage storage.Storage) *EventProcessor {
+func New(client *telegramAPI.Client, storage storage.Storage) *EventProcessor {
 	return &EventProcessor{
+		//tg:      client,
 		tg:      client,
 		storage: storage,
 		handler: handler.New(),
@@ -33,28 +36,25 @@ func New(client *telegram.Client, storage storage.Storage) *EventProcessor {
 
 }
 
-func (p *EventProcessor) Fetch(limit int) ([]events.Event, error) {
-	updates, err := p.tg.Updates(p.offset, limit)
-	if err != nil {
-		return nil, fmt.Errorf("can't get events %w", err)
-	}
+func (p *EventProcessor) Fetch(limit int) (*tgbotapi.UpdatesChannel) {
+	//updates, err := p.tg.Updates(p.offset, limit)
+	Updates := *p.tg.Updates()
 
-	if len(updates) == 0 {
-		return nil, nil
-	}
-	//заранее выделяем память для результата
-	res := make([]events.Event, 0, len(updates))
-
-	for _, u := range updates {
-		res = append(res, toEvent(u))
-	}
-
-	p.offset = updates[len(updates)-1].Id + 1
-
-	return res, nil
+	return &Updates
 }
 
-func (p *EventProcessor) Process(event events.Event) error {
+//func (p *EventProcessor) Process(event events.Event) error {
+//	switch event.Type {
+//	case events.Message:
+//		return p.processMessage(event)
+//	default:
+//		return fmt.Errorf("can't process message: %w", ErrUnknownEventType)
+//	}
+//
+//}
+func (p *EventProcessor) Process(update tgbotapi.Update) error {
+	event:= toEvent(update)
+
 	switch event.Type {
 	case events.Message:
 		return p.processMessage(event)
@@ -76,8 +76,6 @@ func (p *EventProcessor) processMessage(event events.Event) error {
 	return nil
 }
 
-
-
 func meta(event events.Event) (Meta, error) {
 	//type assertion
 	res, ok := event.Meta.(Meta)
@@ -89,7 +87,24 @@ func meta(event events.Event) (Meta, error) {
 	return res, nil
 }
 
-func toEvent(upd telegram.Update) events.Event {
+//func toEvent(upd telegram.Update) events.Event {
+//	updType := fetchType(upd)
+//
+//	res := events.Event{
+//		Type: fetchType(upd),
+//		Text: fetchText(upd),
+//	}
+//
+//	if updType == events.Message {
+//		res.Meta = Meta{
+//			Username: upd.Message.From.Username,
+//			ChatId:   upd.Message.Chat.Id,
+//		}
+//	}
+//
+//	return res
+//}
+func toEvent(upd tgbotapi.Update) events.Event {
 	updType := fetchType(upd)
 
 	res := events.Event{
@@ -99,26 +114,39 @@ func toEvent(upd telegram.Update) events.Event {
 
 	if updType == events.Message {
 		res.Meta = Meta{
-			Username: upd.Message.From.Username,
-			ChatId:   upd.Message.Chat.Id,
+			Username: upd.Message.From.UserName,
+			ChatId:   upd.Message.Chat.ID,
 		}
 	}
 
 	return res
 }
 
-func fetchType(upd telegram.Update) events.Type {
+//func fetchType(upd telegram.Update) events.Type {
+//	if upd.Message == nil {
+//		return events.Unknown
+//	}
+//
+//	return events.Message
+//}
+func fetchType(upd tgbotapi.Update) events.Type {
 	if upd.Message == nil {
 		return events.Unknown
 	}
 
 	return events.Message
 }
-
-func fetchText(upd telegram.Update) string {
+func fetchText(upd tgbotapi.Update) string {
 	if upd.Message == nil {
 		return ""
 	}
-
 	return upd.Message.Text
 }
+
+//func fetchText(upd telegram.Update) string {
+//	if upd.Message == nil {
+//		return ""
+//	}
+//
+//	return upd.Message.Text
+//}
