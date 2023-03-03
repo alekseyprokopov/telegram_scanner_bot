@@ -6,16 +6,16 @@ import (
 )
 
 type Configuration struct {
-	ChatId     int64    `json:"user_name"`
+	ChatId     int64  `json:"user_name"`
 	UserConfig Config `json:"user_config"`
 }
 
 type Config struct {
 	MinValue  int             `json:"min_value"`
+	Orders    int             `json:"orders"`
 	MinSpread float64         `json:"min_spread"`
-	MaxSpread float64         `json:"max_spread"`
+	//MaxSpread float64         `json:"max_spread"`
 	PayTypes  map[string]bool `json:"pay_types"`
-	MinProfit float64         `json:"min_profit"`
 }
 
 func UserConfigToString(c *Configuration) (userConfig string, err error) {
@@ -40,9 +40,9 @@ func StringToConfig(userConfig string) (*Config, error) {
 
 var DefaultUserConfig = &Config{
 	MinValue:  10000,
-	MinSpread: 0.5,
-	MaxSpread: 10,
-	MinProfit: 0,
+	MinSpread: 0.2,
+	//MaxSpread: 10,
+	Orders:    10,
 	PayTypes:  map[string]bool{"Сбербанк": true, "Тинькофф": true, "Райффайзен": true, "QIWI": true, "ЮMoney": true},
 }
 

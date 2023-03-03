@@ -5,21 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81dd0e54-a279-4d6e-97a3-bd6ffb0ed11d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/clients/telegramAPI/telegram.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/clients/telegramAPI/keyboards.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/telegramAPI/telegram.go" beforeDir="false" afterPath="$PROJECT_DIR$/clients/telegramAPI/telegram.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/consumer/event-consumer/event-consumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/event-consumer/event-consumer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/storage.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/messages.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/telegram.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/telegram.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/events/type.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/type.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/platform/huobi/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/huobi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/handler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner_bot" beforeDir="false" afterPath="$PROJECT_DIR$/scanner_bot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage/sqlite/sqlite.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/sqlite/sqlite.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/storage/storage.go" beforeDir="false" afterPath="$PROJECT_DIR$/storage/storage.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

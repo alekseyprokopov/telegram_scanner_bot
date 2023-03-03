@@ -21,18 +21,20 @@ const (
 )
 
 func msgConfig(c *config.Configuration) string {
-	userInfo := fmt.Sprintf("⚙Конфигурация пользователя: id%d⚙ \n\n", c.ChatId)
+	userInfo := fmt.Sprintf("⚙<b>Пользователь:</b> id%d \n\n", c.ChatId)
 
-	minValue := fmt.Sprintf("Минимальное значение: %d \n", c.UserConfig.MinValue)
-	minSpread := fmt.Sprintf("Минимальный спред: %.1f \n", c.UserConfig.MinSpread)
-	maxSpread := fmt.Sprintf("Максимальный спред: %.1f \n", c.UserConfig.MaxSpread)
-	payTypes := fmt.Sprintf("Банки: %s \n \n", payTypesToString(c))
+	minValue := fmt.Sprintf("<i>Лимит:</i> %d \n", c.UserConfig.MinValue)
+	orders := fmt.Sprintf("<i>Количество сделок:</i> %d \n", c.UserConfig.Orders)
+	minSpread := fmt.Sprintf("<i>MIN спред:</i> %.1f \n", c.UserConfig.MinSpread)
+	//maxSpread := fmt.Sprintf("MAX спред: %.1f \n", c.UserConfig.MaxSpread)
+	payTypes := fmt.Sprintf("<i>Способ оплаты:</i> %s \n \n", payTypesToString(c))
 
 	var result strings.Builder
 	result.WriteString(userInfo)
 	result.WriteString(minValue)
 	result.WriteString(minSpread)
-	result.WriteString(maxSpread)
+	result.WriteString(orders)
+	//result.WriteString(maxSpread)
 	result.WriteString(payTypes)
 
 	return result.String()

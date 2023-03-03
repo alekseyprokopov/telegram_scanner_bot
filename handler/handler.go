@@ -57,8 +57,8 @@ func (p *PlaftormHandler) OutsideTT(c *config.Configuration) *[]Chain {
 
 	for _, item1 := range platformResults {
 		for _, item2 := range platformResults {
-			p.findOutsideTTspot1(item1, item2, &chains, c.UserConfig.MinProfit)
-			p.findOutsideTTspot2(item1, item2, &chains, c.UserConfig.MinProfit)
+			p.findOutsideTTspot1(item1, item2, &chains, c.UserConfig.MinSpread)
+			p.findOutsideTTspot2(item1, item2, &chains, c.UserConfig.MinSpread)
 		}
 	}
 
@@ -90,8 +90,8 @@ func (p *PlaftormHandler) OutsideTM(c *config.Configuration) *[]Chain {
 
 	for _, item1 := range platformResults {
 		for _, item2 := range platformResults {
-			p.findOutsideTMspot1(item1, item2, &chains, c.UserConfig.MinProfit)
-			p.findOutsideTMspot2(item1, item2, &chains, c.UserConfig.MinProfit)
+			p.findOutsideTMspot1(item1, item2, &chains, c.UserConfig.MinSpread)
+			p.findOutsideTMspot2(item1, item2, &chains, c.UserConfig.MinSpread)
 		}
 	}
 
@@ -113,7 +113,7 @@ func (p *PlaftormHandler) InsideTT(c *config.Configuration) *[]Chain {
 				log.Printf("\ncan't get result from: %s\n", key)
 			}
 			mu.Lock()
-			p.findInsideTT(platformResult, &chains, c.UserConfig.MinProfit)
+			p.findInsideTT(platformResult, &chains, c.UserConfig.MinSpread)
 			mu.Unlock()
 			defer wg.Done()
 		}()
@@ -136,7 +136,7 @@ func (p *PlaftormHandler) InsideTM(c *config.Configuration) *[]Chain {
 				log.Printf("\ncan't get result from: %s\n", key)
 			}
 			mu.Lock()
-			p.findInsideTM(platformResult, &chains, c.UserConfig.MinProfit)
+			p.findInsideTM(platformResult, &chains, c.UserConfig.MinSpread)
 			mu.Unlock()
 			defer wg.Done()
 		}()

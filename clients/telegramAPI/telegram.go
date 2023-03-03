@@ -11,6 +11,10 @@ type Client struct {
 	config *tgbotapi.UpdateConfig
 }
 
+
+
+
+
 func New(token string) *Client {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
@@ -47,4 +51,44 @@ func (c *Client) SendMessage(chatId int64, text string) error {
 	return nil
 }
 
+func (c *Client) SendMainKeyboard(chatId int64, text string) error {
+	msg := tgbotapi.NewMessage(chatId, text)
+	msg.ReplyMarkup = mainKeyBoard
+	if _, err := c.tg.Send(msg); err != nil {
+		return fmt.Errorf("can't send keyboard: %w", err)
 
+	}
+	return nil
+}
+
+func (c *Client) SendSettingsKeyboard(chatId int64, text string) error {
+	msg := tgbotapi.NewMessage(chatId, text)
+	msg.ParseMode = "HTML"
+
+	msg.ReplyMarkup = settingsKeyBoard
+	if _, err := c.tg.Send(msg); err != nil {
+		return fmt.Errorf("can't send keyboard: %w", err)
+
+	}
+	return nil
+}
+
+func (c *Client) RemoveKeyboard(chatId int64, text string) error {
+	msg := tgbotapi.NewMessage(chatId, text)
+	msg.ReplyMarkup = tgbotapi.NewRemoveKeyboard(true)
+	if _, err := c.tg.Send(msg); err != nil {
+		return fmt.Errorf("can't send keyboard: %w", err)
+
+	}
+	return nil
+}
+
+
+func (c *Client) SendInlineKeyboard(chatId int64, text string, keyboard tgbotapi.InlineKeyboardMarkup) error {
+	msg := tgbotapi.NewMessage(chatId, text)
+	msg.ReplyMarkup = keyboard
+	if _, err := c.tg.Send(msg); err != nil {
+		return fmt.Errorf("can't send keyboard: %w", err)
+	}
+	return nil
+}

@@ -4,21 +4,31 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"scanner_bot/clients/telegramAPI"
 	"scanner_bot/config"
 	"sort"
 	"strings"
 )
 
 const (
-	SetConfigCmd  = "/setConfig"
-	ShowConfigCmd = "/showConfig"
-	HelpCmd       = "/help"
-	StartCmd      = "/start"
-	InsideTTCmd   = "/inside_tt"
-	InsideTMCmd   = "/inside_tm"
-	OutsideTTCmd  = "/outside_tt"
-	OutsideTMCmd  = "/outside_tm"
-	TestCmd       = "/test"
+	SetConfigCmd = "/setConfig"
+
+	ShowConfigCmd  = "Настройки"
+	SetDefaultCmd  = "Сбросить настройки"
+	BackCmd        = "Назад"
+	SetLimitCmd    = "Лимит"
+	SetSpreadCmd   = "Спред"
+	SetOrdersCmd   = "Количество сделок"
+	SetPaytypesCmd = "Способы оплаты"
+
+	HelpCmd  = "/help"
+	StartCmd = "/start"
+
+	InsideTTCmd  = "Внутрибиржевые Т/Т"
+	InsideTMCmd  = "Внутрибиржевые Т/М"
+	OutsideTTCmd = "Межбиржевые Т/Т"
+	OutsideTMCmd = "Межбиржевые Т/М"
+	TestCmd      = "/test"
 )
 
 func (p *EventProcessor) doCmd(text string, chatID int64, username string) error {
@@ -31,13 +41,29 @@ func (p *EventProcessor) doCmd(text string, chatID int64, username string) error
 	//	return p.SetConfig(chatID, username)
 	case HelpCmd:
 		return p.SendHelp(chatID)
-
+	case BackCmd:
+		return p.MainMenu(chatID)
 	case ShowConfigCmd:
 		return p.ShowConfig(chatID)
-
 	case StartCmd:
 		return p.SaveConfig(chatID)
 
+	//setting commands
+	//case SetDefaultCmd:
+	//	return p.SetDefault(chatID)
+
+	case SetLimitCmd:
+		return p.tg.SendInlineKeyboard(chatID, telegramAPI.LimitMessage, telegramAPI.LimitsKeyBoard)
+	case SetSpreadCmd:
+		return p.tg.SendInlineKeyboard(chatID, telegramAPI.SpreadMessage, telegramAPI.SpreadKeyBoard)
+
+	case SetOrdersCmd:
+		return p.tg.SendInlineKeyboard(chatID, telegramAPI.OrdersMessage, telegramAPI.OrdersKeyBoard)
+
+	case SetPaytypesCmd:
+		return p.tg.SendInlineKeyboard(chatID, telegramAPI.PaytypesMessage, telegramAPI.PaytypesKeyBoard)
+
+		//search commands
 	case InsideTTCmd:
 		return p.InsideTT(chatID)
 	case InsideTMCmd:
@@ -55,6 +81,12 @@ func (p *EventProcessor) doCmd(text string, chatID int64, username string) error
 
 }
 
+func (p *EventProcessor) doCmdCallback(text string, chatID int64, username string) error {
+	fmt.Println("DATA: ", text)
+	fmt.Println("HELLO MOTHERFUCKER!!!!!!!!!")
+	return nil
+}
+
 func (p *EventProcessor) SaveConfig(chatID int64) (err error) {
 	defer func() {
 		if err != nil {
@@ -68,6 +100,7 @@ func (p *EventProcessor) SaveConfig(chatID int64) (err error) {
 	if err != nil {
 		return err
 	}
+	p.tg.SendMainKeyboard(chatID, "SSD")
 
 	if isExists {
 
@@ -102,7 +135,22 @@ func (p *EventProcessor) ShowConfig(chatID int64) (err error) {
 
 	//result, _ := config.UserConfigToString(conf)
 	result := msgConfig(conf)
-	if err := p.tg.SendMessage(chatID, result); err != nil {
+	//p.tg.RemoveKeyboard(chatID, "")
+	//p.tg.SendSettingsKeyboard(chatID, "")
+	if err := p.tg.SendSettingsKeyboard(chatID, result); err != nil {
+		return err
+	}
+	return nil
+
+}
+func (p *EventProcessor) MainMenu(chatID int64) (err error) {
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("can't back to main menu: %w", err)
+		}
+	}()
+
+	if err := p.tg.SendMainKeyboard(chatID, "Главное меню"); err != nil {
 		return err
 	}
 	return nil

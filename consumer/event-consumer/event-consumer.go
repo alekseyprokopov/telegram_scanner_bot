@@ -41,13 +41,22 @@ func New(fetcher events.Fetcher, processor events.Processor, batchSize int) Cons
 //	}
 //}
 
-func (c Consumer) Start()  {
+func (c Consumer) Start() {
 	updates := c.fetcher.Fetch(c.batchSize)
 	for update := range *updates {
+		if update.Message != nil {
+			//continue
 
-		if err := c.processor.Process(update); err != nil {
-			log.Printf("ERR HandleEvents: %s", err.Error())
-			continue
+			if err := c.processor.Process(update); err != nil {
+				log.Printf("ERR HandleEvents: %s", err.Error())
+				continue
+			}
+		} else if update.CallbackQuery != nil {
+
+			if err := c.processor.Process(update); err != nil {
+				log.Printf("ERR HandleEvents: %s", err.Error())
+				continue
+			}
 		}
 
 	}
