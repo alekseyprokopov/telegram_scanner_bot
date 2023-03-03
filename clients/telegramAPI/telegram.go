@@ -11,10 +11,6 @@ type Client struct {
 	config *tgbotapi.UpdateConfig
 }
 
-
-
-
-
 func New(token string) *Client {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {

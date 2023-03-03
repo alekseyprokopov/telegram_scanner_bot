@@ -29,7 +29,7 @@ func New(path string) (*Storage, error) {
 func (s *Storage) Save(c *config.Configuration) error {
 	UserName := c.ChatId
 	UserConfig, err := config.UserConfigToString(c)
-	if err!= nil{
+	if err != nil {
 		return fmt.Errorf("can't convert userConfig to string")
 	}
 
@@ -37,6 +37,15 @@ func (s *Storage) Save(c *config.Configuration) error {
 	_, err = s.db.Exec(q, UserName, UserConfig)
 	if err != nil {
 		return fmt.Errorf("can's save config: %w", err)
+	}
+	return nil
+}
+
+func (s *Storage) Update(chatId int64, UserConfig string) error {
+	q := `UPDATE configs SET user_config = ? WHERE chat_id = ?`
+	_, err := s.db.Exec(q, UserConfig, chatId)
+	if err!=nil{
+		return fmt.Errorf("can't update sql: %w", err)
 	}
 	return nil
 }

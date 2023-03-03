@@ -89,14 +89,14 @@ var PaytypesKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 )
 var OrdersKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("10", "paytype_Сбербанк"),
-		tgbotapi.NewInlineKeyboardButtonData("30", "paytype_Тинькофф"),
-		tgbotapi.NewInlineKeyboardButtonData("50", "paytype_Райффайзен"),
+		tgbotapi.NewInlineKeyboardButtonData("10", "order_10"),
+		tgbotapi.NewInlineKeyboardButtonData("30", "order_30"),
+		tgbotapi.NewInlineKeyboardButtonData("50", "order_50"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("70", "paytype_QIWI"),
-		tgbotapi.NewInlineKeyboardButtonData("100", "paytype_ЮMoney"),
-		tgbotapi.NewInlineKeyboardButtonData("150", "paytype_ЮMoney"),
+		tgbotapi.NewInlineKeyboardButtonData("70", "order_70"),
+		tgbotapi.NewInlineKeyboardButtonData("100", "order_100"),
+		tgbotapi.NewInlineKeyboardButtonData("150", "order_150"),
 	),
 
 )

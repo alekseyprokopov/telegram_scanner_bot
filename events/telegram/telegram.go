@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"log"
 	"scanner_bot/clients/telegramAPI"
 	"scanner_bot/events"
 	"scanner_bot/handler"
@@ -34,7 +33,6 @@ func New(client *telegramAPI.Client, storage storage.Storage) *EventProcessor {
 		storage: storage,
 		handler: handler.New(),
 	}
-
 }
 
 func (p *EventProcessor) Fetch(limit int) *tgbotapi.UpdatesChannel {
@@ -55,7 +53,6 @@ func (p *EventProcessor) Fetch(limit int) *tgbotapi.UpdatesChannel {
 // }
 func (p *EventProcessor) Process(update tgbotapi.Update) error {
 	event := toEvent(update)
-	log.Println("PROCESS")
 	switch event.Type {
 	case events.Message:
 		return p.processMessage(event)
@@ -68,7 +65,6 @@ func (p *EventProcessor) Process(update tgbotapi.Update) error {
 }
 
 func (p *EventProcessor) processMessage(event events.Event) error {
-	//log.Println("MESSAGE")
 	meta, err := meta(event)
 	if err != nil {
 		return fmt.Errorf("can't process message %w", err)
@@ -81,16 +77,12 @@ func (p *EventProcessor) processMessage(event events.Event) error {
 }
 
 func (p *EventProcessor) processCallback(event events.Event) error {
-	log.Println("CALLBACK")
 
 	meta, err := meta(event)
-	log.Println("meta: ", meta)
 	if err != nil {
-		log.Println("ОШИБКА")
 		return fmt.Errorf("can't process callback %w", err)
 	}
 	if err := p.doCmdCallback(event.Text, meta.ChatId, meta.Username); err != nil {
-		log.Println("ОШИБКА")
 		return fmt.Errorf("can't process callback %w", err)
 	}
 

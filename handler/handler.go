@@ -8,7 +8,6 @@ import (
 	"scanner_bot/platform/bybit"
 	"scanner_bot/platform/huobi"
 	"sync"
-	"time"
 )
 
 type PlaftormHandler struct {
@@ -33,7 +32,6 @@ func New() *PlaftormHandler {
 		}}
 }
 func (p *PlaftormHandler) OutsideTT(c *config.Configuration) *[]Chain {
-	start := time.Now()
 	var chains []Chain //data, err := p.Huobi.GetResult(c)
 	var platformResults []*platform.ResultPlatformData
 	var mu sync.Mutex
@@ -52,7 +50,6 @@ func (p *PlaftormHandler) OutsideTT(c *config.Configuration) *[]Chain {
 			defer wg.Done()
 		}()
 	}
-	log.Println("TIME : ", time.Since(start))
 	wg.Wait()
 
 	for _, item1 := range platformResults {
@@ -62,11 +59,9 @@ func (p *PlaftormHandler) OutsideTT(c *config.Configuration) *[]Chain {
 		}
 	}
 
-	log.Println("TIME : ", time.Since(start))
 	return &chains
 }
 func (p *PlaftormHandler) OutsideTM(c *config.Configuration) *[]Chain {
-	start := time.Now()
 	var chains []Chain //data, err := p.Huobi.GetResult(c)
 	var platformResults []*platform.ResultPlatformData
 	var mu sync.Mutex
@@ -85,7 +80,6 @@ func (p *PlaftormHandler) OutsideTM(c *config.Configuration) *[]Chain {
 			defer wg.Done()
 		}()
 	}
-	log.Println("TIME : ", time.Since(start))
 	wg.Wait()
 
 	for _, item1 := range platformResults {
@@ -95,12 +89,10 @@ func (p *PlaftormHandler) OutsideTM(c *config.Configuration) *[]Chain {
 		}
 	}
 
-	log.Println("TIME : ", time.Since(start))
 	return &chains
 }
 
 func (p *PlaftormHandler) InsideTT(c *config.Configuration) *[]Chain {
-	start := time.Now()
 	var chains []Chain //data, err := p.Huobi.GetResult(c)
 	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
@@ -119,11 +111,9 @@ func (p *PlaftormHandler) InsideTT(c *config.Configuration) *[]Chain {
 		}()
 	}
 	wg.Wait()
-	log.Println("TIME : ", time.Since(start))
 	return &chains
 }
 func (p *PlaftormHandler) InsideTM(c *config.Configuration) *[]Chain {
-	start := time.Now()
 	var chains []Chain //data, err := p.Huobi.GetResult(c)
 	wg := sync.WaitGroup{}
 	mu := sync.Mutex{}
@@ -142,7 +132,6 @@ func (p *PlaftormHandler) InsideTM(c *config.Configuration) *[]Chain {
 		}()
 	}
 	wg.Wait()
-	log.Println("TIME : ", time.Since(start))
 	return &chains
 }
 
@@ -332,7 +321,6 @@ func (p *PlaftormHandler) findOutsideTTspot2(first *platform.ResultPlatformData,
 		}
 	}
 }
-
 
 func (p *PlaftormHandler) findOutsideTMspot1(first *platform.ResultPlatformData, second *platform.ResultPlatformData, chains *[]Chain, minProfit float64) {
 	//

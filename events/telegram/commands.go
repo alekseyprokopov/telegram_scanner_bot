@@ -7,6 +7,7 @@ import (
 	"scanner_bot/clients/telegramAPI"
 	"scanner_bot/config"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -37,8 +38,8 @@ func (p *EventProcessor) doCmd(text string, chatID int64, username string) error
 	log.Printf("got new command: %s, from user: %s", text, username)
 
 	switch text {
-	//case SetConfigCmd:
-	//	return p.SetConfig(chatID, username)
+	case SetDefaultCmd:
+		return p.SetDefault(chatID)
 	case HelpCmd:
 		return p.SendHelp(chatID)
 	case BackCmd:
@@ -82,8 +83,33 @@ func (p *EventProcessor) doCmd(text string, chatID int64, username string) error
 }
 
 func (p *EventProcessor) doCmdCallback(text string, chatID int64, username string) error {
-	fmt.Println("DATA: ", text)
-	fmt.Println("HELLO MOTHERFUCKER!!!!!!!!!")
+	data := strings.Split(text, "_")
+	typeData := data[0]
+	textData := data[1]
+
+	conf, err := p.storage.GetConfig(chatID)
+	if err != nil {
+		return err
+	}
+
+	switch typeData {
+	case "limit":
+		conf.UserConfig.MinValue, err = strconv.Atoi(textData)
+	case "order":
+		conf.UserConfig.Orders, err = strconv.Atoi(textData)
+	case "paytype":
+		conf.UserConfig.PayTypes[textData] = !conf.UserConfig.PayTypes[textData]
+	case "spread":
+		conf.UserConfig.MinSpread, err = strconv.ParseFloat(textData, 64)
+	}
+
+	UserConfig, err := config.UserConfigToString(conf)
+	if err != nil {
+		return fmt.Errorf("can't convert userConfig to string")
+	}
+
+	p.storage.Update(chatID, UserConfig)
+	p.ShowConfig(chatID)
 	return nil
 }
 
@@ -100,10 +126,8 @@ func (p *EventProcessor) SaveConfig(chatID int64) (err error) {
 	if err != nil {
 		return err
 	}
-	p.tg.SendMainKeyboard(chatID, "SSD")
 
 	if isExists {
-
 		return p.tg.SendMessage(chatID, msgAlreadyExists)
 	}
 
@@ -117,10 +141,23 @@ func (p *EventProcessor) SaveConfig(chatID int64) (err error) {
 	return nil
 }
 
-//func (p *EventProcessor) SetConfig(id int, username string) error {
+// func (p *EventProcessor) SetConfig(id int, username string) error {
 //
-//}
+// }
+func (p *EventProcessor) SetDefault(chatID int64) error {
+	conf := config.ToDefaultConfig(chatID)
+	UserConfig, err := config.UserConfigToString(conf)
+	if err != nil {
+		return fmt.Errorf("can't convert userConfig to string")
+	}
 
+	if err := p.storage.Update(chatID, UserConfig); err != nil {
+		return err
+	}
+	p.ShowConfig(chatID)
+	return nil
+
+}
 func (p *EventProcessor) ShowConfig(chatID int64) (err error) {
 	defer func() {
 		if err != nil {
@@ -237,12 +274,21 @@ func (p *EventProcessor) OutsideTM(chatID int64) error {
 	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
 
 	if len(data) == 0 {
-		p.tg.SendMessage(chatID, "Связки не найдены...")
+		_ = p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
-	message := getResultMessage(data)
-	fmt.Println(message)
-	p.tg.SendMessage(chatID, message)
+	for i, j := 10, 0; i < len(data); i += 10 {
+
+		message := getResultMessage(data[j:i])
+		if err := p.tg.SendMessage(chatID, message); err != nil {
+			return err
+		}
+		j= i+1
+	}
+	//message := getResultMessage(data)
+	//if err := p.tg.SendMessage(chatID, message); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
