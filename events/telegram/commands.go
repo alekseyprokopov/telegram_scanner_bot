@@ -218,8 +218,14 @@ func (p *EventProcessor) InsideTT(chatID int64) error {
 		return nil
 	}
 
-	message := getResultMessage(data)
-	p.tg.SendMessage(chatID, message)
+	for i, j := 10, 0; i < len(data); i += 10 {
+
+		message := getResultMessage(data[j:i])
+		if err := p.tg.SendMessage(chatID, message); err != nil {
+			return err
+		}
+		j= i+1
+	}
 
 	fmt.Println("ДЛИНА: ", len(data))
 
@@ -259,8 +265,14 @@ func (p *EventProcessor) OutsideTT(chatID int64) error {
 		p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
-	message := getResultMessage(data)
-	p.tg.SendMessage(chatID, message)
+	for i, j := 10, 0; i < len(data); i += 10 {
+
+		message := getResultMessage(data[j:i])
+		if err := p.tg.SendMessage(chatID, message); err != nil {
+			return err
+		}
+		j= i+1
+	}
 
 	return nil
 }

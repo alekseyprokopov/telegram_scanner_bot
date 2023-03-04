@@ -4,7 +4,15 @@ var Binance = PlatformInfo{
 	name:       "binance",
 	p2pURL:     "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search",
 	apiUrl:     "https://api.binance.com/api/v3/exchangeInfo",
-	tokens:     []string{"USDT", "BTC", "BUSD", "BNB", "ETH", "SHIB"},
+	tokens:     []string{
+		"USDT",
+		"BTC",
+		"BUSD",
+		"BNB",
+		"ETH",
+		"RUB",
+		//"SHIB",
+	},
 	tradeTypes: []string{"BUY", "SELL"},
 	payTypesDict: map[string]string{
 		"Сбербанк": "RosBankNew", "Тинькофф": "TinkoffNew", "Райффайзен": "RaiffeisenBank", "QIWI": "QIWI", "ЮMoney": "YandexMoneyNew",
@@ -32,22 +40,22 @@ var Huobi = PlatformInfo{
 		"2", /*USDT*/
 		"1", /*BTC*/
 		//"62", /*USDD*/
-		"4",  /*HT*/
-		"22", /*TRX*/
+		//"4",  /*HT*/
+		//"22", /*TRX*/
 		"3",  /*ETH*/
-		"7",  /*XRP*/
-		"8",  /*LTC*/
+		//"7",  /*XRP*/
+		//"8",  /*LTC*/
 	},
 	tradeTypes: []string{"SELL", "BUY"},
 	tokensDict: map[string]string{
 		"2": "USDT",
 		"1": "BTC",
 		//"62": "USDD",
-		"4":  "HT",
-		"22": "TRX",
+		//"4":  "HT",
+		//"22": "TRX",
 		"3":  "ETH",
-		"7":  "XRP",
-		"8":  "LTC",
+		//"7":  "XRP",
+		//"8":  "LTC",
 	},
 	payTypesDict: map[string]string{
 		"Сбербанк": "29", "Тинькофф": "28", "Райффайзен": "36", "QIWI": "9", "ЮMoney": "19",

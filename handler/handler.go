@@ -91,6 +91,24 @@ func (p *PlaftormHandler) OutsideTM(c *config.Configuration) *[]Chain {
 
 	return &chains
 }
+//func (p *PlaftormHandler) InsideMM(c *config.Configuration) *[]Chain {
+//	var chains []Chain //data, err := p.Huobi.GetResult(c)
+//	wg := sync.WaitGroup{}
+//	mu := sync.Mutex{}
+//	for key, value := range p.Platforms {
+//		key, value := key, value
+//		wg.Add(1)
+//		go func() {
+//			platformResult, err := value.GetResult(c)
+//			if err != nil {
+//				log.Printf("\ncan't get result from: %s\n", key)
+//			}
+//			mu.Lock()
+//			p.findInsideTM(platformResult, &chains, c.UserConfig.MinSpread)
+//			mu.Unlock()
+//			defer wg.Done()
+//		}()
+//	}
 
 func (p *PlaftormHandler) InsideTT(c *config.Configuration) *[]Chain {
 	var chains []Chain //data, err := p.Huobi.GetResult(c)
@@ -217,7 +235,7 @@ func (p *PlaftormHandler) findInsideTM(data *platform.ResultPlatformData, chains
 				pairName = pair2name
 
 			}
-
+			//delete!!!!!!!!!!!!!!
 			if result > minProfit {
 				chain := Chain{
 					PairName:  pairName,
@@ -395,7 +413,6 @@ func (p *PlaftormHandler) findOutsideTMspot2(first *platform.ResultPlatformData,
 				pairName = pair2name
 
 			}
-
 			if result > minProfit {
 				chain := &Chain{
 					PairName:  pairName,

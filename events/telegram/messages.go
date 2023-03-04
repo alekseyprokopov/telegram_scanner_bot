@@ -73,7 +73,7 @@ func msgChain(a *handler.Chain) string {
 		spotInfo = "\nСпот: " + a.SpotName + spotInfo
 	}
 	sellPlatformInfo := fmt.Sprintf(
-		"%s <b>%s:</b>\nПокупка: %s\nБанк: %s\nЦена: %g\nПродавец: %s\nЛимиты : %g - %g %s\nДоступно : %g %s\nСделки: %d\n",
+		"%s <b>%s:</b>\nПродажа: %s\nБанк: %s\nЦена: %g\nПродавец: %s\nЛимиты : %g - %g %s\nДоступно : %g %s\nСделки: %d\n",
 		platformBall[sell.PlatformName],
 		strings.Title(sell.PlatformName),
 		strings.ToUpper(sell.Asset),

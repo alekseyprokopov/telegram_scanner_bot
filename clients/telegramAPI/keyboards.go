@@ -15,11 +15,12 @@ var mainKeyBoard = tgbotapi.NewReplyKeyboard(
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Внутрибиржевые Т/Т"),
 		tgbotapi.NewKeyboardButton("Межбиржевые Т/Т"),
-	),
-	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Внутрибиржевые Т/М"),
 		tgbotapi.NewKeyboardButton("Межбиржевые Т/М"),
 	),
+	//tgbotapi.NewKeyboardButtonRow(
+	//
+	//),
 	tgbotapi.NewKeyboardButtonRow(
 		tgbotapi.NewKeyboardButton("Настройки"),
 	),
@@ -58,14 +59,14 @@ var LimitsKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 
 var SpreadKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("0.01%", "spread_0.01"),
 		tgbotapi.NewInlineKeyboardButtonData("0.1%", "spread_0.1"),
-		tgbotapi.NewInlineKeyboardButtonData("0.2%", "spread_0.2"),
-		tgbotapi.NewInlineKeyboardButtonData("0.4%", "spread_0.4"),
+		tgbotapi.NewInlineKeyboardButtonData("0.3%", "spread_0.3"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("0.5%", "spread_0.5"),
 		tgbotapi.NewInlineKeyboardButtonData("0.8%", "spread_0.8"),
-		tgbotapi.NewInlineKeyboardButtonData("1.0%", "spread_0.9"),
+		tgbotapi.NewInlineKeyboardButtonData("1.0%", "spread_1"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("1.5%", "spread_1.5"),
