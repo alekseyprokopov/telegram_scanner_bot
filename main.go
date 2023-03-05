@@ -42,7 +42,7 @@ func main() {
 	app := fiber.New()
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		consumer.Start()
-		return nil
+		return consumer.Start()
 	})
 	port := os.Getenv("PORT")
 	if port == "" {

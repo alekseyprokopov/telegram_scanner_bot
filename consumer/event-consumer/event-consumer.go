@@ -41,7 +41,7 @@ func New(fetcher events.Fetcher, processor events.Processor, batchSize int) Cons
 //	}
 //}
 
-func (c Consumer) Start() {
+func (c Consumer) Start() error {
 	updates := c.fetcher.Fetch(c.batchSize)
 	for update := range *updates {
 		if update.Message != nil {
@@ -60,6 +60,7 @@ func (c Consumer) Start() {
 		}
 
 	}
+	return nil
 }
 
 //func (c Consumer) HandleEvents(events []events.Event) error {
