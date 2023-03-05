@@ -3,7 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 	"scanner_bot/config"
 )
 
@@ -12,7 +12,7 @@ type Storage struct {
 }
 
 func New(path string) (*Storage, error) {
-	db, err := sql.Open("sqlite3", path)
+	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, fmt.Errorf("can't open database: %w", err)
 	}
