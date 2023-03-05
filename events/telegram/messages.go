@@ -23,7 +23,7 @@ const (
 func msgConfig(c *config.Configuration) string {
 	userInfo := fmt.Sprintf("⚙<b>Пользователь:</b> id%d \n\n", c.ChatId)
 
-	minValue := fmt.Sprintf("<i>Лимит:</i> %d \n", c.UserConfig.MinValue)
+	minValue := fmt.Sprintf("<i>Лимит:</i> %s \n", c.UserConfig.MinValue)
 	orders := fmt.Sprintf("<i>Количество сделок:</i> %d \n", c.UserConfig.Orders)
 	minSpread := fmt.Sprintf("<i>MIN спред:</i> %.1f \n", c.UserConfig.MinSpread)
 	//maxSpread := fmt.Sprintf("MAX спред: %.1f \n", c.UserConfig.MaxSpread)
@@ -91,12 +91,15 @@ func msgChain(a *handler.Chain) string {
 	return result
 }
 
-func getResultMessage(data []handler.Chain) string {
+func getResultMessage(data []handler.Chain, counter *int) string {
 	var resultMessage []string
+
 	sep := "--------\n"
-	for i, item := range data {
-		chainMessage := "#" + strconv.Itoa(i+1) + "\n" + msgChain(&item)
+	for _, item := range data {
+		chainMessage := "#" + strconv.Itoa(*counter) + "\n" + msgChain(&item)
 		resultMessage = append(resultMessage, chainMessage)
+		*counter += 1
+
 	}
 	return strings.Join(resultMessage, sep)
 }

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"scanner_bot/clients/telegramAPI"
 	"scanner_bot/config"
+	"scanner_bot/handler"
 	"sort"
 	"strconv"
 	"strings"
@@ -94,9 +95,7 @@ func (p *EventProcessor) doCmdCallback(text string, chatID int64, username strin
 
 	switch typeData {
 	case "limit":
-		log.Println("TEXT DATA:", textData)
 		conf.UserConfig.MinValue = textData
-
 	case "order":
 		conf.UserConfig.Orders, err = strconv.Atoi(textData)
 	case "paytype":
@@ -121,38 +120,32 @@ func (p *EventProcessor) SaveConfig(chatID int64) (err error) {
 			err = fmt.Errorf("can't save page (cmd): %w", err)
 		}
 	}()
-
 	conf := config.ToDefaultConfig(chatID)
 	isExists, err := p.storage.IsExists(chatID)
-
 	if err != nil {
 		return err
 	}
-
 	if isExists {
 		return p.tg.SendMessage(chatID, msgAlreadyExists)
 	}
-
 	if err := p.storage.Save(conf); err != nil {
 		return err
 	}
-
 	if err := p.tg.SendMessage(chatID, msgSaved); err != nil {
+		return err
+	}
+	if err := p.MainMenu(chatID); err != nil {
 		return err
 	}
 	return nil
 }
 
-// func (p *EventProcessor) SetConfig(id int, username string) error {
-//
-// }
 func (p *EventProcessor) SetDefault(chatID int64) error {
 	conf := config.ToDefaultConfig(chatID)
 	UserConfig, err := config.UserConfigToString(conf)
 	if err != nil {
 		return fmt.Errorf("can't convert userConfig to string")
 	}
-
 	if err := p.storage.Update(chatID, UserConfig); err != nil {
 		return err
 	}
@@ -166,16 +159,11 @@ func (p *EventProcessor) ShowConfig(chatID int64) (err error) {
 			err = fmt.Errorf("can't show config (cmd): %w", err)
 		}
 	}()
-	//исправить!!!!!!
 	conf, err := p.storage.GetConfig(chatID)
 	if err != nil {
 		return err
 	}
-
-	//result, _ := config.UserConfigToString(conf)
 	result := msgConfig(conf)
-	//p.tg.RemoveKeyboard(chatID, "")
-	//p.tg.SendSettingsKeyboard(chatID, "")
 	if err := p.tg.SendSettingsKeyboard(chatID, result); err != nil {
 		return err
 	}
@@ -188,7 +176,6 @@ func (p *EventProcessor) MainMenu(chatID int64) (err error) {
 			err = fmt.Errorf("can't back to main menu: %w", err)
 		}
 	}()
-
 	if err := p.tg.SendMainKeyboard(chatID, "Главное меню"); err != nil {
 		return err
 	}
@@ -220,10 +207,22 @@ func (p *EventProcessor) InsideTT(chatID int64) error {
 		return nil
 	}
 
-	message := getResultMessage(data)
-	p.tg.SendMessage(chatID, message)
+	if len(data) < 10 {
+		counter := 0
+		msg := getResultMessage(data, &counter)
+		if err := p.tg.SendMessage(chatID, msg); err != nil {
+			return err
+		}
+		return nil
+	}
 
-	fmt.Println("ДЛИНА: ", len(data))
+	batches := getBatch(data)
+	for _, batch := range batches {
+		if err := p.tg.SendMessage(chatID, batch); err != nil {
+			return err
+		}
+
+	}
 
 	return nil
 }
@@ -241,11 +240,21 @@ func (p *EventProcessor) InsideTM(chatID int64) error {
 		return nil
 	}
 
-	message := getResultMessage(data)
-	p.tg.SendMessage(chatID, message)
+	if len(data) < 10 {
+		counter := 0
+		msg := getResultMessage(data, &counter)
+		if err := p.tg.SendMessage(chatID, msg); err != nil {
+			return err
+		}
+		return nil
+	}
 
-	fmt.Println("ДЛИНА: ", len(data))
-
+	batches := getBatch(data)
+	for _, batch := range batches {
+		if err := p.tg.SendMessage(chatID, batch); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -261,13 +270,21 @@ func (p *EventProcessor) OutsideTT(chatID int64) error {
 		p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
-	for i, j := 10, 0; i < len(data); i += 10 {
 
-		message := getResultMessage(data[j:i])
-		if err := p.tg.SendMessage(chatID, message); err != nil {
+	if len(data) < 10 {
+		counter := 0
+		msg := getResultMessage(data, &counter)
+		if err := p.tg.SendMessage(chatID, msg); err != nil {
 			return err
 		}
-		j = i + 1
+		return nil
+	}
+	batches := getBatch(data)
+	for _, batch := range batches {
+		if err := p.tg.SendMessage(chatID, batch); err != nil {
+			return err
+		}
+
 	}
 
 	return nil
@@ -282,22 +299,25 @@ func (p *EventProcessor) OutsideTM(chatID int64) error {
 	sort.Slice(data, func(i, j int) bool { return data[i].Profit > data[j].Profit })
 
 	if len(data) == 0 {
-		_ = p.tg.SendMessage(chatID, "Связки не найдены...")
+		p.tg.SendMessage(chatID, "Связки не найдены...")
 		return nil
 	}
-	for i, j := 10, 0; i < len(data); i += 10 {
 
-		message := getResultMessage(data[j:i])
-		if err := p.tg.SendMessage(chatID, message); err != nil {
+	if len(data) < 10 {
+		counter := 0
+		msg := getResultMessage(data, &counter)
+		if err := p.tg.SendMessage(chatID, msg); err != nil {
 			return err
 		}
-		j = i + 1
+		return nil
 	}
-	//message := getResultMessage(data)
-	//if err := p.tg.SendMessage(chatID, message); err != nil {
-	//	return err
-	//}
 
+	batches := getBatch(data)
+	for _, batch := range batches {
+		if err := p.tg.SendMessage(chatID, batch); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -321,4 +341,27 @@ func isUrl(text string) bool {
 	u, err := url.Parse(text)
 
 	return err == nil && u.Host != ""
+}
+
+func getBatch(data []handler.Chain) []string {
+	counter := 1
+
+	chunkSize := 10
+	var result []string
+
+	var first, last int
+	for i := 0; i < len(data)/chunkSize+1; i++ {
+		first = i * chunkSize
+		last = i*chunkSize + chunkSize
+		if last > len(data) {
+			last = len(data)
+		}
+		if first == last {
+			break
+		}
+
+		result = append(result, getResultMessage(data[first:last], &counter))
+	}
+
+	return result
 }
