@@ -112,7 +112,7 @@ func (p *Platform) getAdvertise(c *config.Configuration, token string, tradeType
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
-	advertise, err := p.responseToAdvertise(response)
+	advertise, err := p.responseToAdvertise(response, userConfig)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
@@ -142,30 +142,43 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) st
 	return u.Encode()
 }
 
-func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
+func (p *Platform) responseToAdvertise(response *[]byte, config *config.Config) (*platform.Advertise, error) {
+	orders := config.Orders
 	var data Response
 	err := json.Unmarshal(*response, &data)
+
 	if err != nil || len(data.Data) == 0 || data.Code != 200 {
 		return nil, fmt.Errorf("cant' unmarshall data from huobi response: %w", err)
 	}
-	item := data.Data[0]
-	cost, _ := strconv.ParseFloat(item.Price, 64)
-	minLimit, _ := strconv.ParseFloat(item.MinTradeLimit, 64)
-	maxLimit, _ := strconv.ParseFloat(item.MaxTradeLimit, 64)
-	available, _ := strconv.ParseFloat(item.TradeCount, 64)
-	pays := getStringSlice(item.PayMethods)
+	var adv *AdvertiseData
+	for _, item := range data.Data {
+		if item.TradeMonthTimes >= orders {
+			adv = &item
+			break
+		}
+	}
+	if adv == nil {
+		adv = &data.Data[0]
+	}
+
+
+	cost, _ := strconv.ParseFloat(adv.Price, 64)
+	minLimit, _ := strconv.ParseFloat(adv.MinTradeLimit, 64)
+	maxLimit, _ := strconv.ParseFloat(adv.MaxTradeLimit, 64)
+	available, _ := strconv.ParseFloat(adv.TradeCount, 64)
+	pays := getStringSlice(adv.PayMethods)
 
 	return &platform.Advertise{
 		PlatformName: p.Name,
-		SellerName:   item.UserName,
-		Asset:        p.TokenFromDict(strconv.Itoa(item.CoinID)),
-		Fiat:         fiatDict[item.Currency],
+		SellerName:   adv.UserName,
+		Asset:        p.TokenFromDict(strconv.Itoa(adv.CoinID)),
+		Fiat:         fiatDict[adv.Currency],
 		BankName:     p.PayTypesToString(pays),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
-		SellerDeals:  item.TradeMonthTimes,
-		TradeType:    huobiTradeType(item.TradeType),
+		SellerDeals:  adv.TradeMonthTimes,
+		TradeType:    huobiTradeType(adv.TradeType),
 		Available:    available,
 	}, nil
 }

@@ -13,7 +13,7 @@ type Platform struct {
 	*platform.PlatformTemplate
 }
 
-func New(name string, url string,apiUrl string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
+func New(name string, url string, apiUrl string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
 		PlatformTemplate: platform.New(name, url, apiUrl, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
 	}
@@ -59,16 +59,14 @@ func (p *Platform) advertise(c *config.Configuration, token string, tradeType st
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
 	response, err := p.DoPostRequest(query)
-
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
 
-	advertise, err := p.responseToAdvertise(response)
+	advertise, err := p.responseToAdvertise(response, userConfig)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
-
 	return advertise, nil
 }
 
@@ -79,7 +77,7 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 		"currencyId": "RUB",
 		"payment":    p.GetPayTypes(c),
 		"side":       tradeType,
-		"size":       "1",
+		"size":       "10",
 		"page":       "1",
 		"amount":     strconv.Itoa(c.MinValue),
 	}
@@ -90,29 +88,41 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 	return result, nil
 }
 
-func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
+func (p *Platform) responseToAdvertise(response *[]byte, config *config.Config) (*platform.Advertise, error) {
+	orders := config.Orders
 	var data Response
 	err := json.Unmarshal(*response, &data)
+
 	if err != nil || len(data.Result.Items) == 0 {
 		return nil, fmt.Errorf("cant' unmarshall data from  response: %w", err)
 	}
-	item := data.Result.Items[0]
+	var adv *AdvertiseData
 
-	cost, _ := strconv.ParseFloat(item.Price, 64)
-	minLimit, _ := strconv.ParseFloat(item.MinAmount, 64)
-	maxLimit, _ := strconv.ParseFloat(item.MaxAmount, 64)
-	available, _ := strconv.ParseFloat(item.LastQuantity, 64)
+	for _, item := range data.Result.Items {
+		if item.RecentOrderNum >= orders {
+			adv = &item
+			break
+		}
+	}
+	if adv == nil {
+		adv = &data.Result.Items[0]
+	}
+
+	cost, _ := strconv.ParseFloat(adv.Price, 64)
+	minLimit, _ := strconv.ParseFloat(adv.MinAmount, 64)
+	maxLimit, _ := strconv.ParseFloat(adv.MaxAmount, 64)
+	available, _ := strconv.ParseFloat(adv.LastQuantity, 64)
 	return &platform.Advertise{
 		PlatformName: p.Name,
-		SellerName:   item.NickName,
-		Asset:        item.TokenID,
-		Fiat:         item.CurrencyID,
-		BankName:     p.PayTypesToString(item.Payments),
+		SellerName:   adv.NickName,
+		Asset:        adv.TokenID,
+		Fiat:         adv.CurrencyID,
+		BankName:     p.PayTypesToString(adv.Payments),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
-		SellerDeals:  item.RecentOrderNum,
-		TradeType:    bybitTradeType(item.Side),
+		SellerDeals:  adv.RecentOrderNum,
+		TradeType:    bybitTradeType(adv.Side),
 		Available:    available,
 	}, nil
 }
@@ -123,4 +133,3 @@ func bybitTradeType(i int) string {
 	}
 	return "SELL"
 }
-

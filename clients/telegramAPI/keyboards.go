@@ -45,14 +45,15 @@ var settingsKeyBoard = tgbotapi.NewReplyKeyboard(
 
 var LimitsKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("0", "limit_0"),
 		tgbotapi.NewInlineKeyboardButtonData("500", "limit_500"),
-		tgbotapi.NewInlineKeyboardButtonData("1 000", "limit_1000"),
-		tgbotapi.NewInlineKeyboardButtonData("5 000", "limit_5000"),
+		tgbotapi.NewInlineKeyboardButtonData("1000", "limit_1000"),
+		tgbotapi.NewInlineKeyboardButtonData("5000", "limit_5000"),
 	),
 	tgbotapi.NewInlineKeyboardRow(
 		tgbotapi.NewInlineKeyboardButtonData("10 000", "limit_10000"),
 		tgbotapi.NewInlineKeyboardButtonData("30 000", "limit_30000"),
-		tgbotapi.NewInlineKeyboardButtonData("50 000", "limit_50000"),
+		tgbotapi.NewInlineKeyboardButtonData("100 000", "limit_100000"),
 	),
 
 )

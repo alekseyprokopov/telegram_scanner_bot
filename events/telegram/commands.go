@@ -94,6 +94,7 @@ func (p *EventProcessor) doCmdCallback(text string, chatID int64, username strin
 
 	switch typeData {
 	case "limit":
+		textData = ""
 		conf.UserConfig.MinValue, err = strconv.Atoi(textData)
 	case "order":
 		conf.UserConfig.Orders, err = strconv.Atoi(textData)
@@ -218,14 +219,8 @@ func (p *EventProcessor) InsideTT(chatID int64) error {
 		return nil
 	}
 
-	for i, j := 10, 0; i < len(data); i += 10 {
-
-		message := getResultMessage(data[j:i])
-		if err := p.tg.SendMessage(chatID, message); err != nil {
-			return err
-		}
-		j= i+1
-	}
+	message := getResultMessage(data)
+	p.tg.SendMessage(chatID, message)
 
 	fmt.Println("ДЛИНА: ", len(data))
 

@@ -9,26 +9,27 @@ type Response struct {
 	PageSize   int    `json:"pageSize"`
 	TotalPage  int    `json:"totalPage"`
 	CurrPage   int    `json:"currPage"`
-	Data       []struct {
-		ID                int         `json:"id"`
-		UserName          string      `json:"userName"`  //nickname
-		CoinID            int         `json:"coinId"`    //token?
-		Currency          int         `json:"currency"`  //fiat?
-		TradeType         int         `json:"tradeType"` //1 -buy , 2-sell
-		BlockType         int         `json:"blockType"`
-		PayMethod         string      `json:"payMethod"`
-		PayMethods        []PayMethod `json:"payMethods"`
-		PayTerm           int         `json:"payTerm"`
-		MinTradeLimit     string      `json:"minTradeLimit"`     //minLimit,
-		MaxTradeLimit     string      `json:"maxTradeLimit"`     //maxLimit
-		Price             string      `json:"price"`             //цена
-		TradeCount        string      `json:"tradeCount"`        // доступно
-		TradeMonthTimes   int         `json:"tradeMonthTimes"`   //Количество сделок
-		OrderCompleteRate string      `json:"orderCompleteRate"` //процент выполнения
-	} `json:"data"`
-	Success bool `json:"success"`
+	Data       []AdvertiseData `json:"data"`
+	Success    bool `json:"success"`
 }
 
+type AdvertiseData struct {
+	ID                int         `json:"id"`
+	UserName          string      `json:"userName"`  //nickname
+	CoinID            int         `json:"coinId"`    //token?
+	Currency          int         `json:"currency"`  //fiat?
+	TradeType         int         `json:"tradeType"` //1 -buy , 2-sell
+	BlockType         int         `json:"blockType"`
+	PayMethod         string      `json:"payMethod"`
+	PayMethods        []PayMethod `json:"payMethods"`
+	PayTerm           int         `json:"payTerm"`
+	MinTradeLimit     string      `json:"minTradeLimit"`     //minLimit,
+	MaxTradeLimit     string      `json:"maxTradeLimit"`     //maxLimit
+	Price             string      `json:"price"`             //цена
+	TradeCount        string      `json:"tradeCount"`        // доступно
+	TradeMonthTimes   int         `json:"tradeMonthTimes"`   //Количество сделок
+	OrderCompleteRate string      `json:"orderCompleteRate"` //процент выполнения
+}
 type SpotResponse struct {
 	Status string `json:"status"`
 	Ts     int64  `json:"ts"`

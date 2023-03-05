@@ -40,7 +40,7 @@ func (p *Platform) advertise(c *config.Configuration, token string, tradeType st
 		return nil, fmt.Errorf("can't do request to get binance response: %w", err)
 	}
 
-	advertise, err := p.responseToAdvertise(response)
+	advertise, err := p.responseToAdvertise(response, userConfig)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
 	}
@@ -74,7 +74,7 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 	var BinanceJsonData = map[string]interface{}{
 		"proMerchantAds": false,
 		"page":           1,
-		"rows":           1,
+		"rows":           10,
 		"payTypes":       p.GetPayTypes(c),
 		"countries":      []string{},
 		"publisherType":  nil,
@@ -91,30 +91,40 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 	return result, nil
 }
 
-func (p *Platform) responseToAdvertise(response *[]byte) (*platform.Advertise, error) {
+func (p *Platform) responseToAdvertise(response *[]byte, config *config.Config) (*platform.Advertise, error) {
+	orders := config.Orders
 	var data Response
 	err := json.Unmarshal(*response, &data)
 
 	if err != nil {
 		return nil, fmt.Errorf("cant' unmarshall data from binance response: %w", err)
 	}
-	item := data.Data[0]
+	var adv *AdvertiseData
+	for _, item := range data.Data {
+		if item.Advertiser.MonthOrderCount >= orders {
+			adv = &item
+			break
+		}
+	}
+	if adv == nil {
+		adv = &data.Data[0]
+	}
 
-	cost, _ := strconv.ParseFloat(item.Adv.Price, 64)
-	minLimit, _ := strconv.ParseFloat(item.Adv.MinSingleTransAmount, 64)
-	maxLimit, _ := strconv.ParseFloat(item.Adv.MaxSingleTransAmount, 64)
-	available, _ := strconv.ParseFloat(item.Adv.DynamicMaxSingleTransQuantity, 64)
+	cost, _ := strconv.ParseFloat(adv.Adv.Price, 64)
+	minLimit, _ := strconv.ParseFloat(adv.Adv.MinSingleTransAmount, 64)
+	maxLimit, _ := strconv.ParseFloat(adv.Adv.MaxSingleTransAmount, 64)
+	available, _ := strconv.ParseFloat(adv.Adv.DynamicMaxSingleTransQuantity, 64)
 	return &platform.Advertise{
 		PlatformName: p.Name,
-		SellerName:   item.Advertiser.NickName,
-		Asset:        item.Adv.Asset,
-		Fiat:         item.Adv.FiatUnit,
-		BankName:     payTypesToString(&data),
+		SellerName:   adv.Advertiser.NickName,
+		Asset:        adv.Adv.Asset,
+		Fiat:         adv.Adv.FiatUnit,
+		BankName:     payTypesToString(adv),
 		Cost:         cost,
 		MinLimit:     minLimit,
 		MaxLimit:     maxLimit,
-		SellerDeals:  item.Advertiser.MonthOrderCount,
-		TradeType:    binanceTradeType(item.Adv.TradeType),
+		SellerDeals:  adv.Advertiser.MonthOrderCount,
+		TradeType:    binanceTradeType(adv.Adv.TradeType),
 		Available:    available,
 	}, nil
 }
@@ -126,10 +136,9 @@ func binanceTradeType(s string) string {
 	return "SELL"
 }
 
-func payTypesToString(r *Response) string {
-	data := r.Data[0].Adv.TradeMethods
+func payTypesToString(data *AdvertiseData) string {
 	var result []string
-	for _, k := range data {
+	for _, k := range data.Adv.TradeMethods {
 		result = append(result, k.TradeMethodName)
 
 	}

@@ -9,9 +9,12 @@
       <change beforePath="$PROJECT_DIR$/clients/telegramAPI/keyboards.go" beforeDir="false" afterPath="$PROJECT_DIR$/clients/telegramAPI/keyboards.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/storage.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/storage.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/events/telegram/commands.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/commands.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/events/telegram/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/events/telegram/messages.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/handler.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handler/platformData.go" beforeDir="false" afterPath="$PROJECT_DIR$/handler/platformData.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/binance/binance.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/binance.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/binance/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/binance/response.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/bybit/bybit.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit/bybit.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/bybit/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/bybit/response.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/huobi/huobi.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/huobi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platform/huobi/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/platform/huobi/response.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scanner_bot" beforeDir="false" afterPath="$PROJECT_DIR$/scanner_bot" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -76,12 +79,13 @@
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
       <module name="telegram_scanner_bot" />
       <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
+      <kind value="DIRECTORY" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <method v="2" />
     </configuration>
   </component>
