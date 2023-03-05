@@ -1,8 +1,9 @@
 package main
 
 import (
-	"flag"
+	"github.com/gofiber/fiber/v2"
 	"log"
+	"os"
 	"scanner_bot/clients/telegramAPI"
 	eventConsumer "scanner_bot/consumer/event-consumer"
 	eventProcessor "scanner_bot/events/telegram"
@@ -27,7 +28,7 @@ func main() {
 
 	eventsProcessor := eventProcessor.New(
 		//tgClient.New(tgBotHost, token()),
-		telegramAPI.New(token()),
+		telegramAPI.New(os.Getenv("TOKEN")),
 		s,
 	)
 
@@ -38,21 +39,30 @@ func main() {
 	//if err := consumer.Start(); err != nil {
 	//	log.Fatal()
 	//}
-	consumer.Start()
-}
-
-func token() string {
-	token := flag.String(
-		"token",
-		"",
-		"token for access to telegram",
-	)
-	//помещает значение в Токен
-	flag.Parse()
-
-	if *token == "" {
-		log.Fatal("token is missing")
+	app := fiber.New()
+	app.Get("/", func(ctx *fiber.Ctx) error {
+		consumer.Start()
+		return nil
+	})
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
 	}
-
-	return *token
+	log.Fatal(app.Listen("0.0.0.0:" + port))
 }
+
+//func token() string {
+//	token := flag.String(
+//		"token",
+//		"",
+//		"token for access to telegram",
+//	)
+//	//помещает значение в Токен
+//	flag.Parse()
+//
+//	if *token == "" {
+//		log.Fatal("token is missing")
+//	}
+//
+//	return *token
+//}
