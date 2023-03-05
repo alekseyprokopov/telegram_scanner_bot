@@ -131,7 +131,7 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) st
 		"blockType":    []string{"general"},
 		"online":       []string{"1"},
 		"range":        []string{"0"},
-		"amount":       []string{strconv.Itoa(c.MinValue)}, //amount
+		"amount":       []string{c.MinValue}, //amount
 		"isThumbsUp":   []string{"false"},
 		"isMerchant":   []string{"false"},
 		"isTraded":     []string{"false"},

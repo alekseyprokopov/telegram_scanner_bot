@@ -94,8 +94,9 @@ func (p *EventProcessor) doCmdCallback(text string, chatID int64, username strin
 
 	switch typeData {
 	case "limit":
-		textData = ""
-		conf.UserConfig.MinValue, err = strconv.Atoi(textData)
+		log.Println("TEXT DATA:", textData)
+		conf.UserConfig.MinValue = textData
+
 	case "order":
 		conf.UserConfig.Orders, err = strconv.Atoi(textData)
 	case "paytype":
@@ -266,7 +267,7 @@ func (p *EventProcessor) OutsideTT(chatID int64) error {
 		if err := p.tg.SendMessage(chatID, message); err != nil {
 			return err
 		}
-		j= i+1
+		j = i + 1
 	}
 
 	return nil
@@ -290,7 +291,7 @@ func (p *EventProcessor) OutsideTM(chatID int64) error {
 		if err := p.tg.SendMessage(chatID, message); err != nil {
 			return err
 		}
-		j= i+1
+		j = i + 1
 	}
 	//message := getResultMessage(data)
 	//if err := p.tg.SendMessage(chatID, message); err != nil {

@@ -11,7 +11,7 @@ type Configuration struct {
 }
 
 type Config struct {
-	MinValue  int             `json:"min_value"`
+	MinValue  string             `json:"min_value"`
 	Orders    int             `json:"orders"`
 	MinSpread float64         `json:"min_spread"`
 	//MaxSpread float64         `json:"max_spread"`
@@ -39,7 +39,7 @@ func StringToConfig(userConfig string) (*Config, error) {
 }
 
 var DefaultUserConfig = &Config{
-	MinValue:  10000,
+	MinValue:  "",
 	MinSpread: 0.2,
 	//MaxSpread: 10,
 	Orders:    10,

@@ -55,6 +55,7 @@ func (p *Platform) advertise(c *config.Configuration, token string, tradeType st
 	userConfig := &c.UserConfig
 
 	query, err := p.getQuery(userConfig, token, tradeType)
+
 	if err != nil {
 		return nil, fmt.Errorf("can't get query: %w", err)
 	}
@@ -62,7 +63,6 @@ func (p *Platform) advertise(c *config.Configuration, token string, tradeType st
 	if err != nil {
 		return nil, fmt.Errorf("can't do request to get bybit response: %w", err)
 	}
-
 	advertise, err := p.responseToAdvertise(response, userConfig)
 	if err != nil {
 		return nil, fmt.Errorf("can't convert response to Advertise: %w", err)
@@ -79,7 +79,7 @@ func (p *Platform) getQuery(c *config.Config, token string, tradeType string) (*
 		"side":       tradeType,
 		"size":       "10",
 		"page":       "1",
-		"amount":     strconv.Itoa(c.MinValue),
+		"amount":     c.MinValue,
 	}
 	result, err := p.QueryToBytes(&BybitJsonData)
 	if err != nil {

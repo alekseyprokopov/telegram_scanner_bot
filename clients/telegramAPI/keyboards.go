@@ -45,7 +45,7 @@ var settingsKeyBoard = tgbotapi.NewReplyKeyboard(
 
 var LimitsKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("0", "limit_0"),
+		tgbotapi.NewInlineKeyboardButtonData("0", "limit_"),
 		tgbotapi.NewInlineKeyboardButtonData("500", "limit_500"),
 		tgbotapi.NewInlineKeyboardButtonData("1000", "limit_1000"),
 		tgbotapi.NewInlineKeyboardButtonData("5000", "limit_5000"),
