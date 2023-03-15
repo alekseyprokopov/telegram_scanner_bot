@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hirokisan/bybit/v2"
 	"scanner_bot/config"
 	"scanner_bot/platform"
 	"strconv"
@@ -11,11 +12,13 @@ import (
 
 type Platform struct {
 	*platform.PlatformTemplate
+	Client *bybit.Client
 }
 
 func New(name string, url string, apiUrl string, tradeTypes []string, tokens []string, tokensDict map[string]string, payTypesDict map[string]string, allPairs map[string]bool) *Platform {
 	return &Platform{
 		PlatformTemplate: platform.New(name, url, apiUrl, tradeTypes, tokens, tokensDict, payTypesDict, allPairs),
+		Client:           bybit.NewClient().WithAuth("", ""),
 	}
 }
 
@@ -24,30 +27,32 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 }
 
 func (p *Platform) spotData() (*map[string]float64, error) {
-	data, err := p.DoGetRequest(p.ApiUrl, "")
-	if err != nil {
-		return nil, fmt.Errorf("can't do getRequest to huobi API: %w", err)
-	}
-	var spotResponse SpotResponse
-	if err := json.Unmarshal(*data, &spotResponse); err != nil {
-		return nil, fmt.Errorf("can't unmarshall: %w", err)
-	}
+	//data, err := p.DoGetRequest(p.ApiUrl, "")
+	//if err != nil {
+	//	return nil, fmt.Errorf("can't do getRequest to bybit API: %w", err)
+	//}
+	//var spotResponse SpotResponse
+	//if err := json.Unmarshal(*data, &spotResponse); err != nil {
+	//	return nil, fmt.Errorf("can't unmarshall: %w", err)
+	//}
+		sym := bybit.SymbolFuture("")
+		response, _ := p.Client.Future().InverseFuture().Tickers(sym)
 
 	result := map[string]float64{}
 	set := p.AllPairs
 
-	for _, item := range spotResponse.Result.List {
-		_, ok := set[item.Symbol]
+	for _, item := range response.Result {
+		_, ok := set[string(item.Symbol)]
 		if ok {
 			price, err := strconv.ParseFloat(item.LastPrice, 64)
 			if err != nil {
 				return nil, fmt.Errorf("can't parse to Float: %w", err)
 			}
 
-			result[item.Symbol] = price
+			result[string(item.Symbol)] = price
 		}
 	}
-	return &result, err
+	return &result, nil
 
 }
 
