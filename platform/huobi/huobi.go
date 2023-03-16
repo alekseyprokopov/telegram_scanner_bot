@@ -33,7 +33,7 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 	go func() {
 		spotData, err := p.getSpotData()
 		if err != nil {
-			log.Printf("can't get spot data: %v", err)
+			log.Printf("can't get huobi spot data: %v", err)
 		}
 		mu.Lock()
 		result.Spot = *spotData

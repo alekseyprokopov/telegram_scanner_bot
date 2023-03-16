@@ -27,14 +27,7 @@ func (p *Platform) GetResult(c *config.Configuration) (*platform.ResultPlatformD
 }
 
 func (p *Platform) spotData() (*map[string]float64, error) {
-	//data, err := p.DoGetRequest(p.ApiUrl, "")
-	//if err != nil {
-	//	return nil, fmt.Errorf("can't do getRequest to bybit API: %w", err)
-	//}
-	//var spotResponse SpotResponse
-	//if err := json.Unmarshal(*data, &spotResponse); err != nil {
-	//	return nil, fmt.Errorf("can't unmarshall: %w", err)
-	//}
+
 		sym := bybit.SymbolFuture("")
 		response, _ := p.Client.Future().InverseFuture().Tickers(sym)
 
