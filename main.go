@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"scanner_bot/clients/telegramAPI"
 	eventConsumer "scanner_bot/consumer/event-consumer"
@@ -16,6 +17,11 @@ const (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("recovered....")
+		}
+	}()
 	s, err := sqlite.New(storagePath)
 	if err != nil {
 		log.Fatal("can't connect to storage: ", err)

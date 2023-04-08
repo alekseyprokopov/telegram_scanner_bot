@@ -1,10 +1,10 @@
 package handler
 
 var Binance = PlatformInfo{
-	name:       "binance",
-	p2pURL:     "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search",
-	apiUrl:     "https://api.binance.com/api/v3/exchangeInfo",
-	tokens:     []string{
+	name:   "binance",
+	p2pURL: "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search",
+	apiUrl: "https://api.binance.com/api/v3/exchangeInfo",
+	tokens: []string{
 		"USDT",
 		"BTC",
 		"BUSD",
@@ -15,8 +15,9 @@ var Binance = PlatformInfo{
 	},
 	tradeTypes: []string{"BUY", "SELL"},
 	payTypesDict: map[string]string{
-		"Сбербанк": "RosBankNew", "Тинькофф": "TinkoffNew", "Райффайзен": "RaiffeisenBank", "QIWI": "QIWI", "ЮMoney": "YandexMoneyNew",
-		"RosBankNew": "Сбербанк", "TinkoffNew": "Тинькофф", "RaiffeisenBank": "Райффайзен", "YandexMoneyNew": "ЮMoney",
+		//"Сбербанк": "RosBankNew", "Тинькофф": "TinkoffNew", "Райффайзен": "RaiffeisenBank", "QIWI": "QIWI", "ЮMoney": "YandexMoneyNew",
+		//"RosBankNew": "Сбербанк", "TinkoffNew": "Тинькофф", "RaiffeisenBank": "Райффайзен", "YandexMoneyNew": "ЮMoney",
+		"Payeer": "Payeer", "Advcash": "Advcash",
 	},
 }
 
@@ -27,8 +28,10 @@ var Bybit = PlatformInfo{
 	tokens:     []string{"USDT", "BTC", "ETH", "USDC"},
 	tradeTypes: []string{"1", "0"},
 	payTypesDict: map[string]string{
-		"185": "Сбербанк", "75": "Тинькофф", "64": "Райффайзен", "62": "QIWI", "274": "ЮMoney",
-		"Сбербанк": "185", "Тинькофф": "75", "Райффайзен": "64", "QIWI": "62", "ЮMoney": "274",
+		//"185": "Сбербанк", "75": "Тинькофф", "64": "Райффайзен", "62": "QIWI", "274": "ЮMoney",
+		//"Сбербанк": "185", "Тинькофф": "75", "Райффайзен": "64", "QIWI": "62", "ЮMoney": "274",
+		"5": "Advcash", "Advcash": "5",
+		"51": "Payeer", "Payeer": "51",
 	},
 }
 
@@ -42,7 +45,7 @@ var Huobi = PlatformInfo{
 		//"62", /*USDD*/
 		//"4",  /*HT*/
 		//"22", /*TRX*/
-		"3",  /*ETH*/
+		"3", /*ETH*/
 		//"7",  /*XRP*/
 		//"8",  /*LTC*/
 	},
@@ -53,13 +56,15 @@ var Huobi = PlatformInfo{
 		//"62": "USDD",
 		//"4":  "HT",
 		//"22": "TRX",
-		"3":  "ETH",
+		"3": "ETH",
 		//"7":  "XRP",
 		//"8":  "LTC",
 	},
 	payTypesDict: map[string]string{
-		"Сбербанк": "29", "Тинькофф": "28", "Райффайзен": "36", "QIWI": "9", "ЮMoney": "19",
-		"29": "Сбербанк", "28": "Тинькофф", "36": "Райффайзен", "9": "QIWI", "19": "ЮMoney",
+		//"Сбербанк": "29", "Тинькофф": "28", "Райффайзен": "36", "QIWI": "9", "ЮMoney": "19",
+		//"29": "Сбербанк", "28": "Тинькофф", "36": "Райффайзен", "9": "QIWI", "19": "ЮMoney",
+		"20": "Advcash", "Advcash": "20",
+		"24": "Payeer", "Payeer": "24",
 	},
 }
 var allTokens = map[string]bool{

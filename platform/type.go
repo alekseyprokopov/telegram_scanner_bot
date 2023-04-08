@@ -170,7 +170,6 @@ func (p *PlatformTemplate) DoGetRequest(urlAdd string, encodeQuery string) (*[]b
 	}
 
 	return &body, err
-
 }
 func (p *PlatformTemplate) DoPostRequest(query *bytes.Buffer) (*[]byte, error) {
 	req, err := http.NewRequest(http.MethodPost, p.Url, query)
