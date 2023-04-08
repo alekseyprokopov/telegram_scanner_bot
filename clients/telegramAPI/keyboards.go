@@ -3,11 +3,10 @@ package telegramAPI
 import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 const (
-	LimitMessage = "Лимит"
-	SpreadMessage = "MIN спред"
+	LimitMessage    = "Лимит"
+	SpreadMessage   = "MIN спред"
 	PaytypesMessage = "Способы оплаты"
-	OrdersMessage = "Количество сделок"
-
+	OrdersMessage   = "Количество сделок"
 )
 
 var mainKeyBoard = tgbotapi.NewReplyKeyboard(
@@ -55,7 +54,6 @@ var LimitsKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("30 000", "limit_30000"),
 		tgbotapi.NewInlineKeyboardButtonData("100 000", "limit_100000"),
 	),
-
 )
 
 var SpreadKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
@@ -74,19 +72,18 @@ var SpreadKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("2.0%", "spread_2.0"),
 		tgbotapi.NewInlineKeyboardButtonData("3.0%", "spread_3.0"),
 	),
-
 )
 
 var PaytypesKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Сбербанк", "paytype_Сбербанк"),
-		tgbotapi.NewInlineKeyboardButtonData("Тинькофф", "paytype_Тинькофф"),
-		tgbotapi.NewInlineKeyboardButtonData("Райффайзен", "paytype_Райффайзен"),
+		tgbotapi.NewInlineKeyboardButtonData("Payeer", "paytype_Payeer"),
+		tgbotapi.NewInlineKeyboardButtonData("Advcash", "paytype_Advcash"),
+		//tgbotapi.NewInlineKeyboardButtonData("Райффайзен", "paytype_Райффайзен"),
 	),
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("QIWI", "paytype_QIWI"),
-		tgbotapi.NewInlineKeyboardButtonData("ЮMoney", "paytype_ЮMoney"),
-	),
+	//tgbotapi.NewInlineKeyboardRow(
+	//	tgbotapi.NewInlineKeyboardButtonData("QIWI", "paytype_QIWI"),
+	//	tgbotapi.NewInlineKeyboardButtonData("ЮMoney", "paytype_ЮMoney"),
+	//),
 
 )
 var OrdersKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
@@ -100,5 +97,4 @@ var OrdersKeyBoard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("100", "order_100"),
 		tgbotapi.NewInlineKeyboardButtonData("150", "order_150"),
 	),
-
 )
